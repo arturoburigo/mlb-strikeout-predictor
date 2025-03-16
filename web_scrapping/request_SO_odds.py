@@ -16,7 +16,7 @@ params_props = {
     "page": 1,
     "sport": "MLB",
     "market_id": 285,
-    "date": "2024-10-01",
+    "date": "2024-06-02",
     "location": "INT",
     "sort": "diff",
     "include_selections": "false",
@@ -31,9 +31,9 @@ params_offers = {
     "page": 1,
     "picks": "true",
     "sport": "mlb",
-    "market_id": "176",
+    "market_id": "285",
     "location": "INT",
-    "event_id": "94984:94983:94985:95011",
+    "event_id": "93936:93112:94803:93457:92508:93357:93637:93326:94386:92599:93725:93534:94574:94300",
     "live": "true"
 }
 
