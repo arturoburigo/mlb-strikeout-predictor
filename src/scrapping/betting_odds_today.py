@@ -1,12 +1,16 @@
-
 import csv
 import requests
 from datetime import datetime
 from typing import Dict, List, Optional, Union
 from dotenv import load_dotenv
 import os
+import logging
 
 load_dotenv()
+
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 class BettingDataScraper:
     BASE_URL = "https://api.bettingpros.com/v3"
@@ -22,10 +26,39 @@ class BettingDataScraper:
         "WSH": "WSN",  # Washington Nationals
         "CWS": "CHW",  # Chicago White Sox
         "SF": "SFG",   # San Francisco Giants
+        "NYM": "NYM",  # New York Mets
+        "NY": "NYY",   # New York Yankees
+        "BOS": "BOS",  # Boston Red Sox
+        "TOR": "TOR",  # Toronto Blue Jays
+        "BAL": "BAL",  # Baltimore Orioles
+        "CLE": "CLE",  # Cleveland Guardians
+        "DET": "DET",  # Detroit Tigers
+        "MIN": "MIN",  # Minnesota Twins
+        "CHW": "CHW",  # Chicago White Sox
+        "HOU": "HOU",  # Houston Astros
+        "LAA": "LAA",  # Los Angeles Angels
+        "OAK": "OAK",  # Oakland Athletics
+        "SEA": "SEA",  # Seattle Mariners
+        "TEX": "TEX",  # Texas Rangers
+        "ATL": "ATL",  # Atlanta Braves
+        "MIA": "MIA",  # Miami Marlins
+        "PHI": "PHI",  # Philadelphia Phillies
+        "WSN": "WSN",  # Washington Nationals
+        "CHC": "CHC",  # Chicago Cubs
+        "CIN": "CIN",  # Cincinnati Reds
+        "MIL": "MIL",  # Milwaukee Brewers
+        "PIT": "PIT",  # Pittsburgh Pirates
+        "STL": "STL",  # St. Louis Cardinals
+        "ARI": "ARI",  # Arizona Diamondbacks
+        "COL": "COL",  # Colorado Rockies
+        "LAD": "LAD",  # Los Angeles Dodgers
+        "SDP": "SDP",  # San Diego Padres
+        "SFG": "SFG",  # San Francisco Giants
     }
 
     def __init__(self):
         self.matchups = {}
+        self.events = {}
 
     @staticmethod
     def convert_odds_to_decimal(american_odds: Optional[int]) -> Optional[float]:
@@ -78,7 +111,21 @@ class BettingDataScraper:
             raise Exception(f"Failed to fetch events: {response.status_code}")
 
         data = response.json()
-        return [str(event['id']) for event in data.get('events', [])]
+        events = data.get('events', [])
+        
+        # Store event information
+        for event in events:
+            event_id = str(event['id'])
+            participants = event.get('participants', [])
+            if len(participants) == 2:
+                team1 = participants[0]['team'].get('abbreviation')
+                team2 = participants[1]['team'].get('abbreviation')
+                self.events[event_id] = {
+                    'team1': self.TEAM_ABBREVIATIONS.get(team1, team1),
+                    'team2': self.TEAM_ABBREVIATIONS.get(team2, team2)
+                }
+        
+        return [str(event['id']) for event in events]
 
     def fetch_matchups(self, event_ids: List[str]) -> None:
         """Fetch and store matchup information"""
@@ -104,26 +151,23 @@ class BettingDataScraper:
     def _process_matchups(self, offers: List[Dict]) -> None:
         """Process and store matchup information"""
         for offer in offers:
-            participants = offer.get('participants', [])
-            if len(participants) != 2:
-                continue
-
-            team1 = participants[0]['team'].get('abbreviation')
-            team2 = participants[1]['team'].get('abbreviation')
-
-            team1_corrected = self.TEAM_ABBREVIATIONS.get(team1, team1)
-            team2_corrected = self.TEAM_ABBREVIATIONS.get(team2, team2)
-
-            self.matchups[team1_corrected] = {
-                'opponent': team2_corrected,
-                'home': team2_corrected,
-                'away': team1_corrected
-            }
-            self.matchups[team2_corrected] = {
-                'opponent': team1_corrected,
-                'home': team2_corrected,
-                'away': team1_corrected
-            }
+            event_id = str(offer.get('event_id'))
+            if event_id in self.events:
+                event_info = self.events[event_id]
+                team1 = event_info['team1']
+                team2 = event_info['team2']
+                
+                self.matchups[team1] = {
+                    'opponent': team2,
+                    'home': team2,
+                    'away': team1
+                }
+                self.matchups[team2] = {
+                    'opponent': team1,
+                    'home': team2,
+                    'away': team1
+                }
+                logger.info(f"Processed matchup: {team1} vs {team2}")
 
     def fetch_props(self, date: str) -> List[Dict]:
         """Fetch props data"""
@@ -222,24 +266,31 @@ def main(date=None, output_file=None):
         
         scraper = BettingDataScraper()
         
-        print(f"Searching data from date: {date_string}")
+        logger.info(f"Searching data from date: {date_string}")
         
         # Get all events for the date
         event_ids = scraper.get_events(date_string)
         if not event_ids:
-            print(f"Not a single game found for: {date_string}")
+            logger.warning(f"No games found for: {date_string}")
             return
 
+        logger.info(f"Found {len(event_ids)} games for {date_string}")
+        
         # Fetch matchups using event IDs
         scraper.fetch_matchups(event_ids)
+        logger.info(f"Processed {len(scraper.matchups)} matchups")
 
         # Fetch and save props data
         props = scraper.fetch_props(date_string)
+        if not props:
+            logger.warning("No props data found")
+            return
+            
         scraper.save_to_csv(props, output_file)
-        print(f"Data save in {output_file}")
+        logger.info(f"Data saved to {output_file}")
 
     except Exception as e:
-        print(f"Erro: {str(e)}")
+        logger.error(f"Error: {str(e)}", exc_info=True)
 
 
 if __name__ == "__main__":

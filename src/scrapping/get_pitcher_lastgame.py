@@ -6,92 +6,92 @@ import random
 import glob
 from datetime import datetime
 
-# Ler o arquivo betting_data mais recente
+# Read the most recent betting_data file
 betting_files = glob.glob('betting_data_*.csv')
     
 if not betting_files:
     # Fallback to the default name if no date-specific files found
     betting_file = 'betting_data.csv'
-    print(f"Usando arquivo padrão: {betting_file}")
+    print(f"Using default file: {betting_file}")
 else:
     # Sort files by date (assuming format betting_data_YYYY-MM-DD.csv)
     betting_files.sort(key=lambda x: datetime.strptime(x.split('_')[2].split('.')[0], '%Y-%m-%d'), reverse=True)
     betting_file = betting_files[0]
-    print(f"Usando arquivo mais recente: {betting_file}")
+    print(f"Using most recent file: {betting_file}")
 
 betting_data_df = pd.read_csv(betting_file)
 
 
 season = 2025
-print(f'Buscando dados para a temporada {season}')
+print(f'Searching for data for season {season}')
 
-# Criar a lista de pitchers a partir da coluna Name_abbreviation
+# Create the list of pitchers from the Name_abbreviation column
 pitchers = betting_data_df['Name_abbreviation'].tolist()
-print(f'Número de pitchers: {len(pitchers)}')
+print(f'Number of pitchers: {len(pitchers)}')
 
-# Lista para armazenar os dados do último jogo de cada pitcher
+# List to store the last game data for each pitcher
 last_games = []
 
-# Função para carregar o último jogo de um pitcher
+# Function to load the last game of a pitcher
 def load_last_pitcher_game(pitcher, season):
     for id_suffix in ['01', '02', '03', '04']:
         url = f"https://www.baseball-reference.com/players/gl.fcgi?id={pitcher}{id_suffix}&t=p&year={season}"
-        print(f"Tentando URL: {url}")
+        print(f"Trying URL: {url}")
         try:
-            # Carregar tabela de jogos do pitcher
+            # Load pitcher's game log table
             pitcher_gl = pd.read_html(url, header=0, attrs={'id': 'pitching_gamelogs'})[0]
             
-            # Verificar se há dados válidos
+            # Check if there are valid data
             if pitcher_gl.empty:
-                print(f"Tabela vazia para {pitcher} com ID {id_suffix}")
+                print(f"Empty table for {pitcher} with ID {id_suffix}")
                 continue
                 
-            # Filtrar apenas linhas com Rk numérico (dados válidos de jogos)
+            # Filter only rows with numeric Rk (valid game data)
             pitcher_gl = pitcher_gl[pitcher_gl['Rk'].apply(lambda x: str(x).isdigit())]
             
             if pitcher_gl.empty:
-                print(f"Nenhum jogo válido para {pitcher} com ID {id_suffix}")
+                print(f"No valid games for {pitcher} with ID {id_suffix}")
                 continue
                 
-            # Pegar o último jogo (maior valor de Rk)
+            # Get the last game (highest Rk value)
             last_game = pitcher_gl.loc[pitcher_gl['Rk'].astype(int).idxmax()]
             
-            # Adicionar informações do pitcher e temporada
+            # Add pitcher and season information
             last_game['Season'] = season
             last_game['Pitcher'] = pitcher.lower()
             
-            print(f"Último jogo encontrado para {pitcher} na temporada {season}")
+            print(f"Last game found for {pitcher} in season {season}")
             return last_game.to_dict()
             
         except (ValueError, IndexError) as e:
-            print(f"Erro ao buscar dados para {pitcher} com ID {id_suffix}: {e}")
-            time.sleep(random.randint(3, 5))  # Reduzir o tempo de espera
+            print(f"Error fetching data for {pitcher} with ID {id_suffix}: {e}")
+            time.sleep(random.randint(3, 5))  # Reduce wait time
     
-    print(f"Nenhum dado encontrado para {pitcher} na temporada {season}")
+    print(f"No data found for {pitcher} in season {season}")
     return None
 
-# Buscar o último jogo de cada pitcher
+# Search for the last game of each pitcher
 for pitcher in pitchers:
     last_game = load_last_pitcher_game(pitcher, season)
     if last_game:
         last_games.append(last_game)
-    # Espera aleatória para não sobrecarregar o servidor
-    time.sleep(random.randint(3, 5))  # Reduzir o tempo de espera
+    # Random wait to avoid server overload
+    time.sleep(random.randint(3, 5))  # Reduce wait time
 
-# Criar DataFrame com os últimos jogos
+# Create DataFrame with the last games
 if last_games:
     last_games_df = pd.DataFrame(last_games)
     
-    # Selecionar colunas relevantes, se presentes no DataFrame
+    # Select relevant columns, if present in the DataFrame
     columns_to_keep = [
-        'Season',   # Temporada
-        'Pitcher',  # Nome do pitcher
-        'Date',     # Data do jogo
-        'Opp',      # Oponente
-        'Home',     # Se o jogo é em casa (1) ou fora (0)
+        'Season',   # Season
+        'Pitcher',  # Pitcher name
+        'Date',     # Game date
+        'Opp',      # Opponent
+        'Home',     # If the game is home (1) or away (0)
         'IP',       # Innings pitched
-        'H',        # Hits permitidos
-        'BB',       # Walks permitidos
+        'H',        # Hits allowed
+        'BB',       # Walks allowed
         'SO',       # Strikeouts
         'ERA',      # Earned Run Average
         'FIP',      # Fielding Independent Pitching
@@ -102,26 +102,26 @@ if last_games:
         'WPA'       # Win Probability Added
     ]
     
-    # Manter apenas as colunas que existem no DataFrame
+    # Keep only columns that exist in the DataFrame
     available_columns = [col for col in columns_to_keep if col in last_games_df.columns]
     last_games_df = last_games_df[available_columns]
     
-    # Processar a coluna Home se existir e tiver valor 'Unnamed: 5'
+    # Process the Home column if it exists and has value 'Unnamed: 5'
     if 'Unnamed: 5' in last_games_df.columns:
         last_games_df.rename(columns={'Unnamed: 5': 'Home'}, inplace=True)
         last_games_df['Home'] = last_games_df['Home'].fillna(0)
         last_games_df['Home'] = last_games_df['Home'].apply(lambda x: 1 if x == '@' else 0)
         last_games_df['Home'] = last_games_df['Home'].astype(int)
     
-    # Imprimir o resultado
-    print("\nÚltimos jogos de cada pitcher em 2024:")
+    # Print the result
+    print("\nLast games for each pitcher in 2024:")
     print(last_games_df)
     
-    # Também imprimir informações estatísticas
-    print("\nEstatísticas gerais:")
+    # Also print statistical information
+    print("\nGeneral statistics:")
     print(last_games_df.describe())
 else:
-    print("Nenhum dado de último jogo foi encontrado para qualquer pitcher.")
+    print("No last game data was found for any pitcher.")
 
 # Get today's date for the prediction file
 today_date = datetime.now().strftime("%Y-%m-%d")

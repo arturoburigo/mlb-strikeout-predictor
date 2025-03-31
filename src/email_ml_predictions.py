@@ -277,7 +277,7 @@ if __name__ == "__main__":
     cc_emails = [email.strip() for email in cc_emails if email.strip()]
     
     today_date = datetime.now().strftime("%Y-%m-%d")
-    csv_filename = f"data_predicted_{today_date}.csv"
+    csv_filename = f"   predicted_{today_date}.csv"
     
     if not os.path.exists(csv_filename):
         print(f"Today's prediction file not found, looking for most recent...")

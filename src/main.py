@@ -9,10 +9,10 @@ import pytz
 from scrapping.get_pitcher_lastseason import load_pitcher_data
 from model_training import train_model
 from predictions import process_betting_data
-from feature_engineering import engineer_features
+from feature_engineering import main as engineer_features
 from scrapping.betting_odds_today import main as get_betting_odds
 from data_utils import load_data
-from email_ml_predictions import send_predictions_email
+from email_ml_predictions import send_prediction_email
 
 
 # Configure logging
@@ -41,19 +41,21 @@ def run_pipeline():
         
         # Step 2: Get pitcher data from last season
         logger.info("=== Step 2: Getting pitcher data from last season ===")
-        load_pitcher_data()
+        #load_pitcher_data()
         
         # Step 3: Data utilities
         logger.info("=== Step 3: Running data utilities ===")
         pitchers_df, k_percentage_df, betting_file_used = load_data()
+        logger.info(f"Loaded data for {pitchers_df['Pitcher'].nunique()} pitchers")
         
         # Step 4: Feature engineering
         logger.info("=== Step 4: Running feature engineering ===")
         engineered_data = engineer_features(pitchers_df, k_percentage_df)
+        logger.info(f"Engineered data contains {len(engineered_data)} rows with features")
         
-        # Step 5: Model training
+        # Step 5: Model training - passing both original dataframes to the updated train_model function
         logger.info("=== Step 5: Training model ===")
-        model, model_results = train_model(engineered_data)
+        model, model_results = train_model(pitchers_df, k_percentage_df)
         
         # Step 6: Generate predictions
         logger.info("=== Step 6: Generating predictions ===")
@@ -62,12 +64,11 @@ def run_pipeline():
             pitchers_df=pitchers_df,
             k_percentage_df=k_percentage_df,
             betting_data_path=betting_file_used,
-            output_dir='predictions'
         )
         
         # Step 7: Send email with predictions
         logger.info("=== Step 7: Sending email with predictions ===")
-        send_predictions_email(results_df)
+        send_prediction_email(results_df)
         
         logger.info("=== Pipeline completed successfully ===")
         return True
@@ -86,7 +87,7 @@ def schedule_pipeline():
     et_timezone = pytz.timezone('America/New_York')
     scheduler.add_job(
         run_pipeline,
-        trigger=CronTrigger(hour=19, minute=0, timezone=et_timezone),
+        trigger=CronTrigger(hour=19, minute=40, timezone=et_timezone),
         id='daily_pipeline',
         name='Run ML pipeline daily at 4 PM ET',
         replace_existing=True
@@ -97,7 +98,7 @@ def schedule_pipeline():
 
 if __name__ == "__main__":
     # Create necessary directories
-    Path('predictions').mkdir(exist_ok=True)
+    #Path('predictions').mkdir(exist_ok=True)
     Path('logs').mkdir(exist_ok=True)
     
     # Run the pipeline immediately and then schedule it

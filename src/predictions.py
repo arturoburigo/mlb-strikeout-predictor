@@ -33,7 +33,7 @@ def predict_strikeouts_with_confidence(model, pitchers_df, k_percentage_df, pitc
         return None
 
     # Ensure we have required columns for rolling calculations
-    required_columns = ['Season', 'SO', 'IP', 'Home']
+    required_columns = ['Season', 'SO', 'IP', 'Home', 'H', 'BB', 'ERA', 'FIP']
     for col in required_columns:
         if col not in pitcher_data.columns:
             pitcher_data[col] = 0  # Initialize with default value
@@ -43,16 +43,19 @@ def predict_strikeouts_with_confidence(model, pitchers_df, k_percentage_df, pitc
     pitcher_data['SO_rolling_5'] = pitcher_data['SO'].rolling(5, min_periods=1).mean()
     pitcher_data['SO_rolling_10'] = pitcher_data['SO'].rolling(10, min_periods=1).mean()
     
-    # Calculate home/away splits
-    pitcher_data['Home_IP'] = pitcher_data[pitcher_data['Home'] == 1.0]['IP'].mean()
-    pitcher_data['Away_IP'] = pitcher_data[pitcher_data['Home'] == 0.0]['IP'].mean()
-    pitcher_data['Home_SO'] = pitcher_data[pitcher_data['Home'] == 1.0]['SO'].mean()
-    pitcher_data['Away_SO'] = pitcher_data[pitcher_data['Home'] == 0.0]['SO'].mean()
+    # Calculate home/away splits - ensure we get single values
+    home_mask = pitcher_data['Home'] == 1.0
+    away_mask = pitcher_data['Home'] == 0.0
+    
+    home_ip = float(pitcher_data.loc[home_mask, 'IP'].mean()) if home_mask.any() else 0.0
+    away_ip = float(pitcher_data.loc[away_mask, 'IP'].mean()) if away_mask.any() else 0.0
+    home_so = float(pitcher_data.loc[home_mask, 'SO'].mean()) if home_mask.any() else 0.0
+    away_so = float(pitcher_data.loc[away_mask, 'SO'].mean()) if away_mask.any() else 0.0
 
-    # Get opponent strikeout rate
-    opponent_k = k_percentage_df.loc[k_percentage_df['Team'] == opponent_team, '%K'].mean()
+    # Get opponent strikeout rate - ensure single value
+    opponent_k = float(k_percentage_df.loc[k_percentage_df['Team'] == opponent_team, '%K'].mean())
     if np.isnan(opponent_k):
-        opponent_k = k_percentage_df['%K'].mean()  # Fallback to league average
+        opponent_k = float(k_percentage_df['%K'].mean())  # Fallback to league average
     
     # Calculate weighted performance metrics
     performance = calculate_weighted_performance(
@@ -61,46 +64,55 @@ def predict_strikeouts_with_confidence(model, pitchers_df, k_percentage_df, pitc
         last_season=2023 if not pitcher_data[pitcher_data['Season'] == 2023].empty else None
     )
     
-    # Prepare features DataFrame
-    features = pd.DataFrame([performance])
+    # Ensure all performance values are single floats
+    performance = {k: float(v) if isinstance(v, (int, float, np.number)) else 0.0 
+                  for k, v in performance.items()}
     
-    # Add derived features with safety checks
-    features['IP'] = features['IP'].replace(0, 1)  # Avoid division by zero
-    features['SO_per_IP'] = features['SO'] / features['IP']
-    features['BB_per_IP'] = features['BB'] / features['IP']
-    features['K-BB%'] = features['SO_per_IP'] - features['BB_per_IP']
-    features['Opp_K%'] = opponent_k
-    features['Team_K%'] = pitcher_data['Team_K%'].iloc[0] if not pitcher_data.empty else k_percentage_df['%K'].mean()
+    # Get team K% - ensure single value
+    team_k = float(pitcher_data['Team_K%'].iloc[0]) if not pitcher_data.empty else float(k_percentage_df['%K'].mean())
     
-    # Define and validate all required features
-    model_features = [
-        'IP', 'H', 'BB', 'ERA', 'FIP', 'SO_per_IP', 'BB_per_IP', 'K-BB%', 
-        'Opp_K%', 'Team_K%', 'Home', 'SO_rolling_5', 'SO_rolling_10',
-        'Home_IP', 'Away_IP', 'Home_SO', 'Away_SO'
-    ]
+    # Get latest home value - ensure single value
+    latest_home = float(pitcher_data['Home'].iloc[-1]) if not pitcher_data.empty else 0.0
     
-    # Ensure all features exist in the DataFrame
-    for feature in model_features:
-        if feature not in features.columns:
-            features[feature] = 0  # Initialize missing features with 0
-            print(f"Warning: Initialized missing feature {feature} with zeros")
+    # Get latest rolling values - ensure single values
+    latest_so_5 = float(pitcher_data['SO_rolling_5'].iloc[-1]) if not pitcher_data.empty else 0.0
+    latest_so_10 = float(pitcher_data['SO_rolling_10'].iloc[-1]) if not pitcher_data.empty else 0.0
     
-    input_features = features[model_features].fillna(0)
+    # Prepare features DataFrame with all required features
+    features = pd.DataFrame([{
+        'IP': performance.get('IP', 0.0),
+        'H': performance.get('H', 0.0),
+        'BB': performance.get('BB', 0.0),
+        'ERA': performance.get('ERA', 0.0),
+        'FIP': performance.get('FIP', 0.0),
+        'SO_per_IP': performance.get('SO', 0.0) / max(performance.get('IP', 1.0), 1.0),
+        'BB_per_IP': performance.get('BB', 0.0) / max(performance.get('IP', 1.0), 1.0),
+        'K-BB%': (performance.get('SO', 0.0) - performance.get('BB', 0.0)) / max(performance.get('IP', 1.0), 1.0),
+        'Opp_K%': opponent_k,
+        'Team_K%': team_k,
+        'Home': latest_home,
+        'SO_rolling_5': latest_so_5,
+        'SO_rolling_10': latest_so_10,
+        'Home_IP': home_ip,
+        'Away_IP': away_ip,
+        'Home_SO': home_so,
+        'Away_SO': away_so
+    }])
     
     try:
         # Make prediction
-        predicted_strikeouts = model.predict(input_features)[0]
+        predicted_strikeouts = float(model.predict(features)[0])
         
         # Calculate confidence metrics
         if hasattr(model, 'named_steps') and 'randomforestregressor' in model.named_steps:
             # For RandomForest - use tree variance
-            predictions = [tree.predict(input_features) for tree in 
+            predictions = [float(tree.predict(features)[0]) for tree in 
                          model.named_steps.randomforestregressor.estimators_]
-            std_dev = np.std(predictions)
+            std_dev = float(np.std(predictions))
             confidence = max(0, min(1 - (std_dev / 3), 1))
         else:
             # For other models - use simple confidence based on line proximity
-            std_dev = 0
+            std_dev = 0.0
             confidence = 0.8 - (abs(predicted_strikeouts - strikeout_line) / 10)
             confidence = max(0, min(confidence, 1))
         
@@ -108,10 +120,10 @@ def predict_strikeouts_with_confidence(model, pitchers_df, k_percentage_df, pitc
         recommended_side = "Over" if predicted_strikeouts > strikeout_line else "Under"
         
         return {
-            'predicted_value': float(predicted_strikeouts),
+            'predicted_value': predicted_strikeouts,
             'recommended_side': recommended_side,
             'confidence_percentage': float(confidence * 100),
-            'std_dev': float(std_dev)
+            'std_dev': std_dev
         }
         
     except Exception as e:
@@ -137,10 +149,10 @@ def process_betting_data(model, pitchers_df, k_percentage_df, betting_data_path,
     # Load betting data
     betting_data = pd.read_csv(betting_data_path)
     
-    # Initialize prediction columns
+    # Initialize prediction columns with correct data types
     betting_data['ML Strikeout Line'] = (betting_data['Over Line'] + betting_data['Under Line']) / 2
     betting_data['ML Predict Value'] = np.nan
-    betting_data['ML Recommend Side'] = np.nan
+    betting_data['ML Recommend Side'] = pd.Series(dtype='object')  # Use object type for string values
     betting_data['ML Confidence Percentage'] = np.nan
     betting_data['Pitcher 2023'] = False
     

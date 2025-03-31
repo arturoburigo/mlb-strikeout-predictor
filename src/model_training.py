@@ -10,67 +10,53 @@ from lightgbm import LGBMRegressor
 import warnings
 from data_utils import load_data
 
-
-from feature_engineering import calculate_weighted_performance
-
 warnings.filterwarnings("ignore", category=UserWarning, module="lightgbm")
 
-def train_model(pitchers_df, k_percentage_df):
+def train_model(pitchers_df, k_percentage_df=None):
     """
     Train and evaluate machine learning models to predict pitcher strikeouts.
     
     Args:
-        pitchers_df (DataFrame): Historical pitcher data
-        k_percentage_df (DataFrame): Team strikeout percentages
+        pitchers_df (DataFrame): DataFrame containing pitcher data or already engineered data
+        k_percentage_df (DataFrame, optional): Team strikeout percentages
         
     Returns:
         tuple: (best_model, results_dict) containing the best trained model and evaluation metrics
     """
-    # Calculate weighted performance for each pitcher
-    weighted_pitcher_data = []
-    pitchers_df = pitchers_df[(pitchers_df['Season'] == 2023) | (pitchers_df['Season'] == 2024)]
-
-    for pitcher in pitchers_df['Pitcher'].unique():
-        pitcher_data = pitchers_df[pitchers_df['Pitcher'] == pitcher].copy()
+    # Check if data needs engineering
+    if 'SO_per_IP' not in pitchers_df.columns:
+        # If the data hasn't been engineered yet, we need to engineer it
+        from feature_engineering import main as engineer_features
+        engineered_data = engineer_features(pitchers_df, k_percentage_df)
+    else:
+        # Data is already engineered
+        engineered_data = pitchers_df
         
-        if 'SO' not in pitcher_data.columns:
-            pitcher_data['SO'] = 0
-            
-        pitcher_data = pitcher_data.sort_values('Season')
-        pitcher_data['SO_rolling_5'] = pitcher_data['SO'].rolling(5, min_periods=1).mean()
-        pitcher_data['SO_rolling_10'] = pitcher_data['SO'].rolling(10, min_periods=1).mean()
+    # Check if we have data to work with
+    if engineered_data is None or engineered_data.empty:
+        raise ValueError("No data available after feature engineering. Check your input data.")
         
-        pitcher_data['Home_IP'] = pitcher_data[pitcher_data['Home'] == 1.0]['IP'].mean()
-        pitcher_data['Away_IP'] = pitcher_data[pitcher_data['Home'] == 0.0]['IP'].mean()
-        pitcher_data['Home_SO'] = pitcher_data[pitcher_data['Home'] == 1.0]['SO'].mean()
-        pitcher_data['Away_SO'] = pitcher_data[pitcher_data['Home'] == 0.0]['SO'].mean()
-        
-        performance = calculate_weighted_performance(pitcher_data, current_season=2024, last_season=2023)
-        performance['Pitcher'] = pitcher
-        performance['Opp_K%'] = pitcher_data['Opp_K%'].iloc[0] if not pitcher_data.empty else k_percentage_df['%K'].mean()
-        performance['Team_K%'] = pitcher_data['Team_K%'].iloc[0] if not pitcher_data.empty else k_percentage_df['%K'].mean()
-        weighted_pitcher_data.append(performance)
-
-    weighted_df = pd.DataFrame(weighted_pitcher_data)
-    
-    weighted_df['IP'] = weighted_df['IP'].replace(0, 1)
-    weighted_df['SO_per_IP'] = weighted_df['SO'] / weighted_df['IP']
-    weighted_df['BB_per_IP'] = weighted_df['BB'] / weighted_df['IP']
-    weighted_df['K-BB%'] = weighted_df['SO_per_IP'] - weighted_df['BB_per_IP']
-    
+    # The rest of your existing train_model code
     required_features = [
         'IP', 'H', 'BB', 'ERA', 'FIP', 'SO_per_IP', 'BB_per_IP', 'K-BB%', 
         'Opp_K%', 'Team_K%', 'Home', 'SO_rolling_5', 'SO_rolling_10',
         'Home_IP', 'Away_IP', 'Home_SO', 'Away_SO'
     ]
     
+    # Ensure all required features exist
     for feature in required_features:
-        if feature not in weighted_df.columns:
-            weighted_df[feature] = 0
-            #print(f"Warning: Initialized missing feature {feature} with zeros")
+        if feature not in engineered_data.columns:
+            engineered_data[feature] = 0
     
-    X = weighted_df[required_features].fillna(0)
-    y = weighted_df['SO']
+    # Add debug print to check data shape
+    print(f"Training data shape: {engineered_data.shape}")
+    
+    X = engineered_data[required_features].fillna(0)
+    y = engineered_data['SO']
+    
+    # Add verification that we have data
+    if len(X) == 0:
+        raise ValueError(f"No data available for training. Engineered data shape: {engineered_data.shape}")
     
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
