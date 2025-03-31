@@ -6,9 +6,6 @@ import random
 import glob
 from datetime import datetime
 
-
-
-# %%
 # Ler o arquivo betting_data.csv
 betting_files = glob.glob('betting_data_*.csv')
     

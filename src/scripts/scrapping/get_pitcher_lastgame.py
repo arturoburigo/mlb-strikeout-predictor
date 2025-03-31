@@ -123,4 +123,45 @@ if last_games:
 else:
     print("Nenhum dado de último jogo foi encontrado para qualquer pitcher.")
 
+# Get today's date for the prediction file
+today_date = datetime.now().strftime("%Y-%m-%d")
+csv_filename = f"data_predicted_{today_date}.csv"
 
+if not os.path.exists(csv_filename):
+    print(f"Today's prediction file not found, looking for most recent...")
+    prediction_files = glob.glob("data_predicted_*.csv")
+    
+    if prediction_files:
+        prediction_files.sort(reverse=True)
+        csv_filename = prediction_files[0]
+        print(f"Using most recent file: {csv_filename}")
+    else:
+        print("Error: No prediction files found")
+        exit(1)
+
+# Read the predicted data
+predicted_df = pd.read_csv(csv_filename)
+
+# Check if we have last games data
+if not last_games:
+    print("Warning: No pitcher last game data available. Creating file without strikeout information.")
+    predicted_df.to_csv('game_results.csv', index=False)
+    print("Created game_results.csv without strikeout data")
+else:
+    # Create a dictionary mapping pitcher names to their last game SO (strikeouts)
+    pitcher_to_so = {}
+    for game in last_games:
+        pitcher = game['Pitcher'].lower()
+        if 'SO' in game:
+            pitcher_to_so[pitcher] = game['SO']
+        else:
+            print(f"Warning: No strikeout data for pitcher {pitcher}")
+            pitcher_to_so[pitcher] = None
+
+    # Add the last game strikeout column to the predicted data
+    predicted_df['game_strikeout'] = predicted_df['Name_abbreviation'].str.lower().map(pitcher_to_so)
+
+    # Save the combined data
+    predicted_df.to_csv('game_results.csv', index=False)
+    print("Successfully created game_results.csv with last game strikeout data")
+    print(f"Added strikeout data for {len(pitcher_to_so)} pitchers")

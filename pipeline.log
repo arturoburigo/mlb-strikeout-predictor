@@ -1,0 +1,56 @@
+2025-03-31 00:16:34,370 - __main__ - INFO - Running initial pipeline execution...
+2025-03-31 00:16:34,370 - __main__ - INFO - === Step 1: Getting betting odds for today ===
+2025-03-31 00:16:36,222 - __main__ - INFO - === Step 2: Getting pitcher data from last season ===
+2025-03-31 00:16:36,518 - numexpr.utils - INFO - NumExpr defaulting to 8 threads.
+2025-03-31 00:16:36,795 - __main__ - ERROR - Pipeline failed with error: HTTP Error 429: Too Many Requests
+Traceback (most recent call last):
+  File "/Users/arturoburigo/Projects/machine learning/pitcher_so_ML/src/scripts/main.py", line 37, in run_pipeline
+    from scrapping.get_pitcher_lastseason import get_pitcher_data
+  File "/Users/arturoburigo/Projects/machine learning/pitcher_so_ML/src/scripts/scrapping/get_pitcher_lastseason.py", line 64, in <module>
+    pitcher_data = load_pitcher_data(pitcher, season)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/arturoburigo/Projects/machine learning/pitcher_so_ML/src/scripts/scrapping/get_pitcher_lastseason.py", line 47, in load_pitcher_data
+    pitcher_gl = pd.read_html(url, header=0, attrs={'id': 'pitching_gamelogs'})[0]
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/pandas/io/html.py", line 1240, in read_html
+    return _parse(
+           ^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/pandas/io/html.py", line 983, in _parse
+    tables = p.parse_tables()
+             ^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/pandas/io/html.py", line 249, in parse_tables
+    tables = self._parse_tables(self._build_doc(), self.match, self.attrs)
+                                ^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/pandas/io/html.py", line 806, in _build_doc
+    raise e
+  File "/opt/anaconda3/lib/python3.12/site-packages/pandas/io/html.py", line 785, in _build_doc
+    with get_handle(
+         ^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/pandas/io/common.py", line 728, in get_handle
+    ioargs = _get_filepath_or_buffer(
+             ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/pandas/io/common.py", line 384, in _get_filepath_or_buffer
+    with urlopen(req_info) as req:
+         ^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/pandas/io/common.py", line 289, in urlopen
+    return urllib.request.urlopen(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/urllib/request.py", line 215, in urlopen
+    return opener.open(url, data, timeout)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/urllib/request.py", line 521, in open
+    response = meth(req, response)
+               ^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/urllib/request.py", line 630, in http_response
+    response = self.parent.error(
+               ^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/urllib/request.py", line 559, in error
+    return self._call_chain(*args)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/urllib/request.py", line 492, in _call_chain
+    result = func(*args)
+             ^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/urllib/request.py", line 639, in http_error_default
+    raise HTTPError(req.full_url, code, msg, hdrs, fp)
+urllib.error.HTTPError: HTTP Error 429: Too Many Requests
+2025-03-31 00:16:36,799 - __main__ - ERROR - Initial pipeline execution failed. Please check the logs.
