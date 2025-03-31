@@ -6,6 +6,14 @@ from pathlib import Path
 from apscheduler.schedulers.blocking import BlockingScheduler
 from apscheduler.triggers.cron import CronTrigger
 import pytz
+from scrapping.get_pitcher_lastseason import get_pitcher_data
+from model_training import train_model
+from predictions import process_betting_data
+from feature_engineering import engineer_features
+from scrapping.betting_odds_today import main as get_betting_odds
+from data_utils import load_data
+from email_ml_predictions import send_predictions_email
+
 
 # Configure logging
 logging.basicConfig(
@@ -29,32 +37,26 @@ def run_pipeline():
     try:
         # Step 1: Get betting odds for today
         logger.info("=== Step 1: Getting betting odds for today ===")
-        from scrapping.betting_odds_today import main as get_betting_odds
         get_betting_odds()
         
         # Step 2: Get pitcher data from last season
         logger.info("=== Step 2: Getting pitcher data from last season ===")
-        from scrapping.get_pitcher_lastseason import get_pitcher_data
         get_pitcher_data()
         
         # Step 3: Data utilities
         logger.info("=== Step 3: Running data utilities ===")
-        from data_utils import load_data
         pitchers_df, k_percentage_df, betting_file_used = load_data()
         
         # Step 4: Feature engineering
         logger.info("=== Step 4: Running feature engineering ===")
-        from feature_engineering import engineer_features
         engineered_data = engineer_features(pitchers_df, k_percentage_df)
         
         # Step 5: Model training
         logger.info("=== Step 5: Training model ===")
-        from model_training import train_model
         model, model_results = train_model(engineered_data)
         
         # Step 6: Generate predictions
         logger.info("=== Step 6: Generating predictions ===")
-        from predictions import process_betting_data
         results_df = process_betting_data(
             model=model,
             pitchers_df=pitchers_df,
@@ -65,7 +67,6 @@ def run_pipeline():
         
         # Step 7: Send email with predictions
         logger.info("=== Step 7: Sending email with predictions ===")
-        from email_ml_predictions import send_predictions_email
         send_predictions_email(results_df)
         
         logger.info("=== Pipeline completed successfully ===")
