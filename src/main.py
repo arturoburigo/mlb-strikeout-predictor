@@ -86,7 +86,7 @@ def schedule_pipeline():
     et_timezone = pytz.timezone('America/New_York')
     scheduler.add_job(
         run_pipeline,
-        trigger=CronTrigger(hour=16, minute=0, timezone=et_timezone),
+        trigger=CronTrigger(hour=19, minute=0, timezone=et_timezone),
         id='daily_pipeline',
         name='Run ML pipeline daily at 4 PM ET',
         replace_existing=True
