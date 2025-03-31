@@ -83,7 +83,7 @@ def collect_team_strikeout_data(start_year, end_year):
 
 # Example usage:
 if __name__ == "__main__":
-    results = collect_team_strikeout_data(2022, 2023)
+    results = collect_team_strikeout_data(2023, 2023)
     print(results)
 
 

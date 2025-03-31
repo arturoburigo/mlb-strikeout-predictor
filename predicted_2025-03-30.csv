@@ -1,0 +1,22 @@
+Player,Name_abbreviation,Team,Over Line,Over Odds,Under Line,Under Odds,API Projected Value,API Recommended Side,Streak,Streak Type,Diff,ML Strikeout Line,ML Predict Value,ML Recommend Side,ML Confidence Percentage,Pitcher 2023
+Matthew Boyd,boydma,CHC,3.5,1.61,4.5,1.96,5.08,over,1,over,1.58,4.0,5.149729054478736,Over,80.97764765427411,True
+Bailey Ober,oberba,MIN,4.5,1.97,5.0,1.73,5.79,over,2,under,1.29,4.75,5.768466330603481,Over,82.45165458204909,True
+Taj Bradley,bradlta,TBR,6.5,1.81,7.0,1.73,5.73,under,2,over,-1.27,6.75,6.119388473057605,Under,81.71408816711595,True
+Tanner Bibee,bibeeta,CLE,4.5,1.83,4.5,2.07,5.67,over,1,under,1.17,4.5,6.198821592218872,Over,81.83269868002476,True
+Aaron Nola,nolaaa,PHI,5.0,1.73,5.5,2.0,5.93,over,6,over,0.93,5.25,5.788178701493539,Over,82.45165458204909,True
+Robbie Ray,rayro,SFG,6.0,1.73,6.5,1.97,5.69,under,2,under,-0.81,6.25,4.939596275958946,Under,81.34040649650595,False
+Andrew Heaney,heanean,PIT,4.0,1.73,4.5,1.61,4.74,over,4,under,0.74,4.25,4.772268309616007,Over,81.83269868002476,True
+Jack Kochanowicz,kochaja,LAA,2.5,1.63,3.0,1.73,3.15,over,1,over,0.65,2.75,3.346957818477244,Over,81.8037506468893,False
+Nick Pivetta,pivetni,SDP,5.5,1.77,6.5,1.51,6.13,over,1,under,0.63,6.0,5.67966968163749,Under,82.45165458204909,True
+Ryan Feltner,feltnry,COL,4.0,1.73,4.5,1.72,4.61,over,1,over,0.61,4.25,4.7401328053514575,Over,81.55606469838274,True
+Max Meyer,meyerma,MIA,4.0,1.73,4.5,1.63,4.6,over,3,over,0.6,4.25,3.9538609942695753,Under,81.63366800932678,False
+JP Sears,searsjp,ATH,4.0,1.73,4.5,1.67,4.51,over,1,over,0.51,4.25,4.09878637870724,Under,81.43911021873797,True
+Bryan Woo,woobr,SEA,5.5,2.06,5.5,1.8,5.02,under,1,under,-0.48,5.5,4.605458705097188,Under,82.45165458204909,True
+Andre Pallante,pallaan,STL,3.5,1.83,3.5,2.08,3.95,over,1,under,0.45,3.5,2.898906802853726,Under,81.63366800932678,True
+Davis Martin,martida,CHW,4.0,1.73,4.5,1.85,4.09,under,5,under,-0.41,4.25,4.301838954669013,Over,81.55606469838274,False
+Marcus Stroman,stromma,NYY,3.5,1.75,4.0,1.73,3.86,over,3,under,0.36,3.75,4.102146000107446,Over,81.2598241824587,True
+Michael Wacha,wachami,KCR,4.5,1.77,4.5,2.15,4.85,over,4,under,0.35,4.5,4.864018517284278,Over,81.66931973112574,True
+Aaron Civale,civalaa,MIL,4.5,1.94,4.5,2.0,4.82,over,2,under,0.32,4.5,4.833654880093179,Over,81.52943780238658,True
+Chris Bassitt,bassich,TOR,4.5,1.42,5.5,1.88,5.19,under,1,over,-0.31,5.0,4.841231521017842,Under,81.55606469838274,True
+Nick Martinez,martini,CIN,4.5,2.1,4.5,1.93,4.75,over,1,over,0.25,4.5,3.2214621609485166,Under,82.35658217838943,True
+Mitchell Parker,parkemi,WSN,4.5,1.98,4.5,2.0,4.65,over,2,over,0.15,4.5,4.726953416487411,Over,81.66931973112574,False

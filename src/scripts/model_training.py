@@ -8,6 +8,8 @@ from sklearn.metrics import mean_absolute_error, r2_score
 from xgboost import XGBRegressor
 from lightgbm import LGBMRegressor
 import warnings
+from data_utils import load_data
+
 
 from feature_engineering import calculate_weighted_performance
 
@@ -65,7 +67,7 @@ def train_model(pitchers_df, k_percentage_df):
     for feature in required_features:
         if feature not in weighted_df.columns:
             weighted_df[feature] = 0
-            print(f"Warning: Initialized missing feature {feature} with zeros")
+            #print(f"Warning: Initialized missing feature {feature} with zeros")
     
     X = weighted_df[required_features].fillna(0)
     y = weighted_df['SO']
@@ -110,3 +112,81 @@ def train_model(pitchers_df, k_percentage_df):
 
     print(f"\nBest model: {best_model_name} with R2 score: {best_score:.4f}")
     return best_model, results
+
+def main():
+    """
+    Main function to train and evaluate machine learning models for predicting pitcher strikeouts.
+    Loads necessary data, trains models, and displays evaluation results.
+    """
+    try:
+        print("Loading pitcher data and team strikeout percentage data...")
+        
+        # Load the necessary data files
+        # First try to use the load_data function if available
+        try:
+            pitchers_df, k_percentage_df, _ = load_data()
+            print("Data loaded using load_data() function")
+        except (ImportError, ModuleNotFoundError):
+            # Fallback to direct loading if the function isn't available
+            print("Fallback to direct data loading...")
+            pitchers_df = pd.read_csv('pitchers_data.csv')
+            k_percentage_df = pd.read_csv('team_strikeout_percentage.csv')
+            print("Data loaded directly from CSV files")
+        
+        print(f"Loaded data for {pitchers_df['Pitcher'].nunique()} pitchers")
+        print(f"Loaded strikeout percentages for {len(k_percentage_df)} teams")
+        
+        # Train the models
+        print("\nTraining machine learning models to predict pitcher strikeouts...")
+        best_model, results = train_model(pitchers_df, k_percentage_df)
+        
+        # Print detailed results
+        print("\nDetailed model evaluation results:")
+        print("-" * 65)
+        print(f"{'Model':<15} | {'CV R²':<10} | {'Test R²':<10} | {'Test MAE':<10}")
+        print("-" * 65)
+        
+        for model_name, metrics in results.items():
+            print(f"{model_name:<15} | {metrics['CV_R2']:<10.4f} | {metrics['Test_R2']:<10.4f} | {metrics['Test_MAE']:<10.4f}")
+        
+        # Get feature importances if available (for tree-based models)
+        print("\nFeature importances (if available):")
+        try:
+            model = best_model.steps[-1][1]  # Get the model from the pipeline
+            
+            if hasattr(model, 'feature_importances_'):
+                # Get the feature names from the training data
+                feature_names = [
+                    'IP', 'H', 'BB', 'ERA', 'FIP', 'SO_per_IP', 'BB_per_IP', 'K-BB%', 
+                    'Opp_K%', 'Team_K%', 'Home', 'SO_rolling_5', 'SO_rolling_10',
+                    'Home_IP', 'Away_IP', 'Home_SO', 'Away_SO'
+                ]
+                
+                # Create a DataFrame of feature importances
+                importances = pd.DataFrame({
+                    'Feature': feature_names,
+                    'Importance': model.feature_importances_
+                })
+                
+                # Sort by importance
+                importances = importances.sort_values('Importance', ascending=False)
+                
+                # Display top 10 features
+                print(importances.head(10))
+            else:
+                print("Feature importances not available for this model type")
+        
+        except Exception as e:
+            print(f"Could not extract feature importances: {e}")
+        
+        print("\nModel training completed successfully!")
+        return best_model, results
+        
+    except Exception as e:
+        print(f"Error occurred during model training: {e}")
+        import traceback
+        traceback.print_exc()
+        return None, None
+
+if __name__ == "__main__":
+    main()

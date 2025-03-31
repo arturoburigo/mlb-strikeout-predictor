@@ -1,4 +1,2 @@
-team_strikeout_percentage.csv
-betting_data_with_predictions.csv
-pitchers_data.csv
 .ipynb_checkpoints/
+.env

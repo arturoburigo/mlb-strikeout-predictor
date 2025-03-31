@@ -1,27 +1,18 @@
-# %%
+
 import csv
 import requests
 from datetime import datetime
 from typing import Dict, List, Optional, Union
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
 
 class BettingDataScraper:
     BASE_URL = "https://api.bettingpros.com/v3"
     HEADERS = {
-        "Accept": "application/json, text/plain, */*",
-        "Accept-Encoding": "gzip, deflate, br",
-        "Accept-Language": "en-GB,en-US;q=0.9,en;q=0.8",
-        "Cache-Control": "no-store, no-cache, must-revalidate",
-        "Expires": "0",
         "Origin": "https://www.bettingpros.com",
-        "Pragma": "no-cache",
-        "Priority": "u=3, i",
-        "Referer": "https://www.bettingpros.com/",
-        "Sec-Fetch-Dest": "empty",
-        "Sec-Fetch-Mode": "cors",
-        "Sec-Fetch-Site": "same-site",
-        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Safari/605.1.15",
-        "x-api-key": "CHi8Hy5CEE4khd46XNYL23dCFX96oUdw6qOt1Dnh",
-        "x-level": "YmFzaWM="
+        "x-api-key": os.getenv("BETTINGPROS_API_KEY")
     }
 
     TEAM_ABBREVIATIONS = {
@@ -206,8 +197,8 @@ class BettingDataScraper:
 
 def get_date_string(date=None):
     """
-    Formata uma data para o formato month-dd-yyyy.
-    Se nenhuma data for fornecida, usa a data atual.
+    format date to month-dd-yyyy.
+    if specif date is not define, it will use today's date.
     """
     if date:
         return date
@@ -231,12 +222,12 @@ def main(date=None, output_file=None):
         
         scraper = BettingDataScraper()
         
-        print(f"Buscando dados para a data: {date_string}")
+        print(f"Searching data from date: {date_string}")
         
         # Get all events for the date
         event_ids = scraper.get_events(date_string)
         if not event_ids:
-            print(f"Nenhum evento encontrado para a data: {date_string}")
+            print(f"Not a single game found for: {date_string}")
             return
 
         # Fetch matchups using event IDs
@@ -245,7 +236,7 @@ def main(date=None, output_file=None):
         # Fetch and save props data
         props = scraper.fetch_props(date_string)
         scraper.save_to_csv(props, output_file)
-        print(f"Dados salvos com sucesso em {output_file}")
+        print(f"Data save in {output_file}")
 
     except Exception as e:
         print(f"Erro: {str(e)}")

@@ -15,12 +15,12 @@ def load_data():
     if not betting_files:
         # Fallback to the default name if no date-specific files found
         betting_file = 'betting_data.csv'
-        print(f"Usando arquivo padrão: {betting_file}")
+        print(f"Using default file: {betting_file}")
     else:
         # Sort files by date (assuming format betting_data_YYYY-MM-DD.csv)
         betting_files.sort(key=lambda x: datetime.strptime(x.split('_')[2].split('.')[0], '%Y-%m-%d'), reverse=True)
         betting_file = betting_files[0]
-        print(f"Usando arquivo mais recente: {betting_file}")
+        print(f"Using most recent file: {betting_file}")
     
     # Load all datasets
     k_percentage_df = pd.read_csv('team_strikeout_percentage.csv')
@@ -57,3 +57,31 @@ def load_data():
     }, inplace=True)
     
     return pitcher_data, k_percentage_df, betting_file
+
+def main():
+    """
+    Main function to execute the data loading and preprocessing.
+    """
+    try:
+        # Load the preprocessed data
+        pitcher_data, k_percentage_df, betting_file = load_data()
+        
+        # Print some information about the loaded data
+        print(f"Data loaded successfully from {betting_file}")
+        print(f"Pitcher data shape: {pitcher_data.shape}")
+        print(f"Team strikeout percentage data shape: {k_percentage_df.shape}")
+        
+        # Display the first few rows of each dataset
+        #print("\nFirst 5 rows of pitcher data:")
+        #print(pitcher_data.head())
+        
+        #print("\nTeam strikeout percentages:")
+        #print(k_percentage_df.head())
+        
+        # You can add more code here to perform analysis, model training, etc.
+        
+    except Exception as e:
+        print(f"Error occurred during data loading: {e}")
+
+if __name__ == "__main__":
+    main()
