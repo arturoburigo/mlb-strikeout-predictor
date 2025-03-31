@@ -6,7 +6,7 @@ from pathlib import Path
 from apscheduler.schedulers.blocking import BlockingScheduler
 from apscheduler.triggers.cron import CronTrigger
 import pytz
-from scrapping.get_pitcher_lastseason import get_pitcher_data
+from scrapping.get_pitcher_lastseason import load_pitcher_data
 from model_training import train_model
 from predictions import process_betting_data
 from feature_engineering import engineer_features
@@ -41,7 +41,7 @@ def run_pipeline():
         
         # Step 2: Get pitcher data from last season
         logger.info("=== Step 2: Getting pitcher data from last season ===")
-        get_pitcher_data()
+        load_pitcher_data()
         
         # Step 3: Data utilities
         logger.info("=== Step 3: Running data utilities ===")

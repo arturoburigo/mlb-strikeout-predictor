@@ -1,4 +1,4 @@
-# %%
+
 import pandas as pd
 import os
 import time
@@ -30,7 +30,6 @@ print(f'number of pitchers={len(pitchers)}')
 dataframes = []
 
 
-# %%
 # Verifica se o arquivo CSV já existe
 if os.path.exists('pitchers_data.csv'):
     existing_df = pd.read_csv('pitchers_data.csv')  # Lê o DataFrame existente
