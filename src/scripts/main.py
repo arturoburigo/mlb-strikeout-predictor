@@ -77,21 +77,21 @@ def run_pipeline():
 
 def schedule_pipeline():
     """
-    Schedule the pipeline to run at 10 AM US time every day
+    Schedule the pipeline to run at 4 PM US time every day
     """
     scheduler = BlockingScheduler()
     
-    # Schedule the pipeline to run at 10 AM US time (using Eastern Time)
+    # Schedule the pipeline to run at 4 PM US time (using Eastern Time)
     et_timezone = pytz.timezone('America/New_York')
     scheduler.add_job(
         run_pipeline,
-        trigger=CronTrigger(hour=10, minute=0, timezone=et_timezone),
+        trigger=CronTrigger(hour=16, minute=0, timezone=et_timezone),
         id='daily_pipeline',
-        name='Run ML pipeline daily at 10 AM ET',
+        name='Run ML pipeline daily at 4 PM ET',
         replace_existing=True
     )
     
-    logger.info("Pipeline scheduled to run daily at 10 AM ET")
+    logger.info("Pipeline scheduled to run daily at 4 PM ET")
     scheduler.start()
 
 if __name__ == "__main__":
