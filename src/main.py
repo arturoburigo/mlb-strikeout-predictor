@@ -13,8 +13,10 @@ from feature_engineering import main as engineer_features
 from scrapping.betting_odds_today import main as get_betting_odds
 from data_utils import load_data
 from email_ml_predictions import send_prediction_email
+from email_ml_results import send_results_email
 import os
 from dotenv import load_dotenv
+import pandas as pd
 
 # Load environment variables
 load_dotenv()
@@ -38,6 +40,8 @@ DATA_PIPELINE_HOUR = int(os.getenv('DATA_PIPELINE_HOUR', 10))
 DATA_PIPELINE_MINUTE = int(os.getenv('DATA_PIPELINE_MINUTE', 0))
 EMAIL_HOUR = int(os.getenv('EMAIL_HOUR', 12))
 EMAIL_MINUTE = int(os.getenv('EMAIL_MINUTE', 0))
+RESULTS_EMAIL_HOUR = int(os.getenv('RESULTS_EMAIL_HOUR', 0))
+RESULTS_EMAIL_MINUTE = int(os.getenv('RESULTS_EMAIL_MINUTE', 1))
 
 def run_data_pipeline():
     """
@@ -48,6 +52,7 @@ def run_data_pipeline():
         # Step 1: Get betting odds for today
         logger.info("=== Step 1: Getting betting odds for today ===")
         get_betting_odds()
+        
         
         # Step 2: Get pitcher data from last season
         logger.info("=== Step 2: Getting pitcher data from last season ===")
@@ -89,11 +94,87 @@ def run_email_pipeline():
     """
     try:
         logger.info("=== Sending email with predictions ===")
-        send_prediction_email()
-        logger.info("=== Email sent successfully ===")
-        return True
+        
+        # Get today's date for the prediction file
+        today_date = datetime.now().strftime("%Y-%m-%d")
+        csv_filename = f"predicted_{today_date}.csv"
+        
+        # Get email configuration from environment variables
+        destination_email = os.getenv("RECEIVER_EMAIL")
+        cc_emails = os.getenv("CC_EMAILS", "").split(",")
+        cc_emails = [email.strip() for email in cc_emails if email.strip()]
+        
+        if not destination_email:
+            logger.error("RECEIVER_EMAIL environment variable not set")
+            return False
+            
+        if not os.path.exists(csv_filename):
+            logger.error(f"Today's prediction file not found: {csv_filename}")
+            return False
+            
+        # Read the predictions file
+        predictions_df = pd.read_csv(csv_filename)
+        
+        # Send the email
+        success = send_prediction_email(
+            receiver_email=destination_email,
+            predictions_df=predictions_df,
+            csv_path=csv_filename,
+            cc_emails=cc_emails
+        )
+        
+        if success:
+            logger.info("=== Email sent successfully ===")
+        else:
+            logger.error("=== Failed to send email ===")
+            
+        return success
     except Exception as e:
         logger.error(f"Email pipeline failed with error: {str(e)}", exc_info=True)
+        return False
+
+def run_results_email_pipeline():
+    """
+    Function to send the email with results analysis
+    """
+    try:
+        logger.info("=== Sending email with results analysis ===")
+        
+        # Get yesterday's date for the files
+        today_date = datetime.now()
+        yesterday_date = today_date - pd.Timedelta(days=1)
+        yesterday_date_str = yesterday_date.strftime("%Y-%m-%d")
+        
+        predictions_filename = f"predicted_{yesterday_date_str}.csv"
+        results_filename = f"game_results_{yesterday_date_str}.csv"
+        
+        if not os.path.exists(predictions_filename) or not os.path.exists(results_filename):
+            logger.error(f"Required files not found for {yesterday_date_str}")
+            logger.error(f"Looking for: {predictions_filename} and {results_filename}")
+            return False
+        
+        predictions_df = pd.read_csv(predictions_filename)
+        results_df = pd.read_csv(results_filename)
+        
+        destination_email = os.getenv("RECEIVER_EMAIL")
+        cc_emails = os.getenv("CC_EMAILS", "").split(",")
+        cc_emails = [email.strip() for email in cc_emails if email.strip()]
+        
+        success = send_results_email(
+            receiver_email=destination_email,
+            predictions_df=predictions_df,
+            results_df=results_df,
+            cc_emails=cc_emails
+        )
+        
+        if success:
+            logger.info("=== Results email sent successfully ===")
+        else:
+            logger.error("=== Failed to send results email ===")
+            
+        return success
+    except Exception as e:
+        logger.error(f"Results email pipeline failed with error: {str(e)}", exc_info=True)
         return False
 
 def schedule_pipeline():
@@ -112,16 +193,27 @@ def schedule_pipeline():
         replace_existing=True
     )
     
-    # Schedule the email at configured time
+    # Schedule the predictions email at configured time
     scheduler.add_job(
         run_email_pipeline,
         trigger=CronTrigger(hour=EMAIL_HOUR, minute=EMAIL_MINUTE, timezone=et_timezone),
         id='daily_email_pipeline',
-        name=f'Send email daily at {EMAIL_HOUR:02d}:{EMAIL_MINUTE:02d} ET',
+        name=f'Send predictions email daily at {EMAIL_HOUR:02d}:{EMAIL_MINUTE:02d} ET',
         replace_existing=True
     )
     
-    logger.info(f"Pipeline scheduled to run daily at {DATA_PIPELINE_HOUR:02d}:{DATA_PIPELINE_MINUTE:02d} ET and send email at {EMAIL_HOUR:02d}:{EMAIL_MINUTE:02d} ET")
+    # Schedule the results email at configured time
+    scheduler.add_job(
+        run_results_email_pipeline,
+        trigger=CronTrigger(hour=RESULTS_EMAIL_HOUR, minute=RESULTS_EMAIL_MINUTE, timezone=et_timezone),
+        id='daily_results_email_pipeline',
+        name=f'Send results email daily at {RESULTS_EMAIL_HOUR:02d}:{RESULTS_EMAIL_MINUTE:02d} ET',
+        replace_existing=True
+    )
+    
+    logger.info(f"Pipeline scheduled to run daily at {DATA_PIPELINE_HOUR:02d}:{DATA_PIPELINE_MINUTE:02d} ET")
+    logger.info(f"Predictions email will be sent at {EMAIL_HOUR:02d}:{EMAIL_MINUTE:02d} ET")
+    logger.info(f"Results email will be sent at {RESULTS_EMAIL_HOUR:02d}:{RESULTS_EMAIL_MINUTE:02d} ET")
     scheduler.start()
 
 def get_next_run_time(current_time, target_hour, target_minute):
@@ -147,6 +239,7 @@ if __name__ == "__main__":
     # Calculate next run times for both jobs
     next_data_pipeline = get_next_run_time(current_time, DATA_PIPELINE_HOUR, DATA_PIPELINE_MINUTE)
     next_email = get_next_run_time(current_time, EMAIL_HOUR, EMAIL_MINUTE)
+    next_results_email = get_next_run_time(current_time, RESULTS_EMAIL_HOUR, RESULTS_EMAIL_MINUTE)
     
     # Calculate wait times
     wait_seconds_data = (next_data_pipeline - current_time).total_seconds()
@@ -155,10 +248,15 @@ if __name__ == "__main__":
     wait_seconds_email = (next_email - current_time).total_seconds()
     wait_hours_email = wait_seconds_email / 3600
     
+    wait_seconds_results = (next_results_email - current_time).total_seconds()
+    wait_hours_results = wait_seconds_results / 3600
+    
     logger.info(f"Waiting until {next_data_pipeline.strftime('%Y-%m-%d %H:%M')} ET to start the pipeline...")
     logger.info(f"Approximately {wait_hours_data:.1f} hours until next pipeline run")
     logger.info(f"Email will be sent at {next_email.strftime('%Y-%m-%d %H:%M')} ET")
     logger.info(f"Approximately {wait_hours_email:.1f} hours until next email")
+    logger.info(f"Results email will be sent at {next_results_email.strftime('%Y-%m-%d %H:%M')} ET")
+    logger.info(f"Approximately {wait_hours_results:.1f} hours until next results email")
     
     # Start the scheduler which will wait until the scheduled time
     schedule_pipeline()

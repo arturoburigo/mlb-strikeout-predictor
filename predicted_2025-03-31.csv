@@ -1,0 +1,11 @@
+Player,Name_abbreviation,Team,Over Line,Over Odds,Under Line,Under Odds,API Projected Value,API Recommended Side,Streak,Streak Type,Diff,ML Strikeout Line,ML Predict Value,ML Recommend Side,ML Confidence Percentage,Pitcher 2023
+Grant Holmes,holmegr,ATL,3.5,1.61,4.5,1.72,4.8,over,1,under,1.3,4.0,2.9454483159401117,Under,69.45448315940112,False
+Sean Newcomb,newcose,BOS,3.0,1.73,3.5,1.74,4.26,over,1,over,1.26,3.25,-0.522461554520147,Under,42.275384454798534,True
+Kris Bubic,bubickr,KCR,4.5,1.65,5.5,1.62,4.44,under,1,over,-1.06,5.0,1.565078536017026,Under,45.65078536017027,False
+Tyler Glasnow,glasnty,LAD,6.5,1.8,7.0,1.73,7.29,over,2,under,0.79,6.75,7.500937326947477,Over,72.49062673052524,True
+David Peterson,peterda,NYM,4.5,2.12,4.5,1.74,5.21,over,6,under,0.71,4.5,4.583508486465564,Over,79.16491513534436,True
+Cade Povich,povicca,BAL,4.5,1.77,5.0,1.73,4.97,over,1,over,0.47,4.75,4.556391839000876,Under,78.06391839000877,False
+Cristopher Sanchez,sanchcr,PHI,5.5,1.82,5.5,2.1,5.05,under,1,over,-0.45,5.5,4.673589770618595,Under,71.73589770618595,True
+Chris Paddack,paddach,MIN,4.5,1.71,5.0,1.73,4.94,over,1,under,0.44,4.75,4.935773566055932,Over,78.14226433944069,False
+Cal Quantrill,quantca,MIA,3.5,2.05,3.5,1.96,3.84,over,2,under,0.34,3.5,3.545665320405634,Over,79.54334679594366,True
+Martin Perez,perezma,CHW,3.5,2.1,3.5,1.93,3.83,over,1,over,0.33,3.5,4.515132917976784,Over,69.84867082023216,True

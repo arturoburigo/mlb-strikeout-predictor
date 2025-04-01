@@ -176,7 +176,7 @@ def send_prediction_email(receiver_email, predictions_df=None, csv_path=None, cc
         print(f"Unexpected error: {str(e)}")
         return False
     
-def send_prediction_email(receiver_email, predictions_df=None, csv_path=None, cc_emails=None):
+def send_prediction_email(receiver_email=None, predictions_df=None, csv_path=None, cc_emails=None):
     """
     Send prediction email with top picks and CSV attachment, with optional CC recipients.
     
