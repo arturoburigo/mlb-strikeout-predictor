@@ -46,6 +46,8 @@ def create_email_content(predictions_df=None, csv_path=None):
         <table border="1" cellpadding="5" cellspacing="0">
             <tr>
                 <th>Pitcher (Team)</th>
+                <th>Over Odds</th>
+                <th>Under Odds</th>
                 <th>API Prediction</th>
                 <th>ML Prediction</th>
                 <th>ML Recommendation</th>
@@ -57,6 +59,8 @@ def create_email_content(predictions_df=None, csv_path=None):
             html_body += f"""
             <tr>
                 <td>{row['Player']} ({row['Team']})</td>
+                <td>{row['Over Odds']:.1f}</td>
+                <td>{row['Under Odds']:.1f}</td>
                 <td>{row['API Projected Value']:.1f}</td>
                 <td>{row['ML Predict Value']:.1f}</td>
                 <td>{row['ML Recommend Side']} {row['Over Line']}</td>
@@ -277,11 +281,11 @@ if __name__ == "__main__":
     cc_emails = [email.strip() for email in cc_emails if email.strip()]
     
     today_date = datetime.now().strftime("%Y-%m-%d")
-    csv_filename = f"   predicted_{today_date}.csv"
+    csv_filename = f"predicted_{today_date}.csv"
     
     if not os.path.exists(csv_filename):
         print(f"Today's prediction file not found, looking for most recent...")
-        prediction_files = glob.glob("data_predicted_*.csv")
+        prediction_files = glob.glob("predicted_*.csv")
         
         if prediction_files:
             prediction_files.sort(reverse=True)

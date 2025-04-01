@@ -245,7 +245,7 @@ def get_top_picks(predictions_df, n=10, verbose=True):
     
     # Ensure required columns exist
     required_columns = ['Player', 'Team', 'ML Predict Value', 'ML Recommend Side', 
-                       'Over Line', 'ML Confidence Percentage', 'API Projected Value']
+                       'Over Line', 'ML Confidence Percentage', 'API Projected Value', 'Over Odds', 'Under Odds']
     
     missing_cols = [col for col in required_columns if col not in predictions_df.columns]
     if missing_cols:
@@ -261,11 +261,13 @@ def get_top_picks(predictions_df, n=10, verbose=True):
     if verbose:
         formatted_output = f"\nTop {n} highest confidence picks:\n\n"
         for _, pick in top_picks.iterrows():
-            formatted_output += (f"{pick['Player']} ({pick['Team']}): "
-                               f"ML Pred: {pick['ML Predict Value']:.1f} | "
-                               f"API Proj: {pick['API Projected Value']:.1f} | "
-                               f"{pick['ML Recommend Side']} {pick['Over Line']} | "
-                               f"Confidence: {pick['ML Confidence Percentage']:.1f}%\n")
+            formatted_output += (f"{pick['Player']} ({pick['Team']}): |"
+                                f"Over Odds: {pick['Over Odds']:.1f} | "
+                                f"Under Odds: {pick['Under Odds']:.1f} | "
+                                f"ML Pred: {pick['ML Predict Value']:.1f} | "
+                                f"API Proj: {pick['API Projected Value']:.1f} | "
+                                f"{pick['ML Recommend Side']} {pick['Over Line']} | "
+                                f"Confidence: {pick['ML Confidence Percentage']:.1f}%\n")
         print(formatted_output)
     
     return top_picks, formatted_output
