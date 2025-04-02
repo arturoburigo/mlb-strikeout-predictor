@@ -7,6 +7,7 @@ from apscheduler.schedulers.blocking import BlockingScheduler
 from apscheduler.triggers.cron import CronTrigger
 import pytz
 from scrapping.get_pitcher_lastseason import load_pitcher_data
+from scrapping.get_pitcher_lastgame import load_last_pitcher_game
 from model_training import train_model
 from predictions import process_betting_data
 from feature_engineering import main as engineer_features
@@ -17,7 +18,6 @@ from email_ml_results import send_results_email
 import os
 from dotenv import load_dotenv
 import pandas as pd
-
 # Load environment variables
 load_dotenv()
 
@@ -32,16 +32,30 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+# Get schedule times from environment variables
+DATA_PIPELINE_HOUR = int(os.getenv('DATA_PIPELINE_HOUR', 19))
+DATA_PIPELINE_MINUTE = int(os.getenv('DATA_PIPELINE_MINUTE', 10))
+EMAIL_HOUR = int(os.getenv('EMAIL_HOUR', 22))
+EMAIL_MINUTE = int(os.getenv('EMAIL_MINUTE', 40))
+RESULTS_EMAIL_HOUR = int(os.getenv('RESULTS_EMAIL_HOUR', 11))
+RESULTS_EMAIL_MINUTE = int(os.getenv('RESULTS_EMAIL_MINUTE', 42))
+
+# Debug logging for environment variables
+logger.info("=== Environment Variables Debug ===")
+logger.info(f"DATA_PIPELINE_HOUR from env: {os.getenv('DATA_PIPELINE_HOUR')}")
+logger.info(f"DATA_PIPELINE_MINUTE from env: {os.getenv('DATA_PIPELINE_MINUTE')}")
+logger.info(f"EMAIL_HOUR from env: {os.getenv('EMAIL_HOUR')}")
+logger.info(f"EMAIL_MINUTE from env: {os.getenv('EMAIL_MINUTE')}")
+logger.info(f"RESULTS_EMAIL_HOUR from env: {os.getenv('RESULTS_EMAIL_HOUR')}")
+logger.info(f"RESULTS_EMAIL_MINUTE from env: {os.getenv('RESULTS_EMAIL_MINUTE')}")
+logger.info(f"Final values:")
+logger.info(f"DATA_PIPELINE: {DATA_PIPELINE_HOUR:02d}:{DATA_PIPELINE_MINUTE:02d}")
+logger.info(f"EMAIL: {EMAIL_HOUR:02d}:{EMAIL_MINUTE:02d}")
+logger.info(f"RESULTS_EMAIL: {RESULTS_EMAIL_HOUR:02d}:{RESULTS_EMAIL_MINUTE:02d}")
+
 # Suppress warnings
 warnings.filterwarnings('ignore')
 
-# Get schedule times from environment variables
-DATA_PIPELINE_HOUR = int(os.getenv('DATA_PIPELINE_HOUR', 10))
-DATA_PIPELINE_MINUTE = int(os.getenv('DATA_PIPELINE_MINUTE', 0))
-EMAIL_HOUR = int(os.getenv('EMAIL_HOUR', 12))
-EMAIL_MINUTE = int(os.getenv('EMAIL_MINUTE', 0))
-RESULTS_EMAIL_HOUR = int(os.getenv('RESULTS_EMAIL_HOUR', 0))
-RESULTS_EMAIL_MINUTE = int(os.getenv('RESULTS_EMAIL_MINUTE', 1))
 
 def run_data_pipeline():
     """
@@ -133,11 +147,16 @@ def run_email_pipeline():
         logger.error(f"Email pipeline failed with error: {str(e)}", exc_info=True)
         return False
 
-def run_results_email_pipeline():
+def run_results_pipeline():
     """
-    Function to send the email with results analysis
+    Function to get pitcher data and send results email
     """
     try:
+        # First, get pitcher data
+        logger.info("=== Getting pitcher data from last game ===")
+        load_last_pitcher_game()
+        
+        # Then send results email
         logger.info("=== Sending email with results analysis ===")
         
         # Get yesterday's date for the files
@@ -174,7 +193,7 @@ def run_results_email_pipeline():
             
         return success
     except Exception as e:
-        logger.error(f"Results email pipeline failed with error: {str(e)}", exc_info=True)
+        logger.error(f"Results pipeline failed with error: {str(e)}", exc_info=True)
         return False
 
 def schedule_pipeline():
@@ -202,18 +221,18 @@ def schedule_pipeline():
         replace_existing=True
     )
     
-    # Schedule the results email at configured time
+    # Schedule the results pipeline at configured time
     scheduler.add_job(
-        run_results_email_pipeline,
+        run_results_pipeline,
         trigger=CronTrigger(hour=RESULTS_EMAIL_HOUR, minute=RESULTS_EMAIL_MINUTE, timezone=et_timezone),
-        id='daily_results_email_pipeline',
-        name=f'Send results email daily at {RESULTS_EMAIL_HOUR:02d}:{RESULTS_EMAIL_MINUTE:02d} ET',
+        id='daily_results_pipeline',
+        name=f'Run results pipeline daily at {RESULTS_EMAIL_HOUR:02d}:{RESULTS_EMAIL_MINUTE:02d} ET',
         replace_existing=True
     )
     
     logger.info(f"Pipeline scheduled to run daily at {DATA_PIPELINE_HOUR:02d}:{DATA_PIPELINE_MINUTE:02d} ET")
     logger.info(f"Predictions email will be sent at {EMAIL_HOUR:02d}:{EMAIL_MINUTE:02d} ET")
-    logger.info(f"Results email will be sent at {RESULTS_EMAIL_HOUR:02d}:{RESULTS_EMAIL_MINUTE:02d} ET")
+    logger.info(f"Results pipeline will run at {RESULTS_EMAIL_HOUR:02d}:{RESULTS_EMAIL_MINUTE:02d} ET")
     scheduler.start()
 
 def get_next_run_time(current_time, target_hour, target_minute):

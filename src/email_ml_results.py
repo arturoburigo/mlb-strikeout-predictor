@@ -13,6 +13,7 @@ load_dotenv()
 def analyze_predictions(predictions_df, results_df):
     """
     Analyze predictions vs actual results and calculate potential profits.
+    Only includes predictions with ML Confidence Percentage > 68%.
     
     Args:
         predictions_df (pd.DataFrame): DataFrame containing predictions
@@ -28,20 +29,27 @@ def analyze_predictions(predictions_df, results_df):
         right_on='Name_abbreviation'
     )
     
+    # Filter for high confidence predictions (> 68%)
+    merged_df = merged_df[merged_df['ML Confidence Percentage'] > 68]
+    
     # Calculate correct and incorrect predictions
     correct_predictions = []
     incorrect_predictions = []
     profit_by_pitcher = []
     
     for _, row in merged_df.iterrows():
-        prediction = row['ML Recommend Side']
+        ml_side = row['ML Recommend Side']
+        ml_so_pred = row['ML Predict Value']
         over_line = row['Over Line']
         actual_so = row['REAL SO']
-        odds = row['Over Odds'] if prediction == 'u' else row['Under Odds']
+        odds = row['Over Odds'] if ml_side == 'u' else row['Under Odds']
+        confidence = row['ML Confidence Percentage']
         
-        # Determine if prediction was correct
-        is_correct = (prediction == 'u' and actual_so < over_line) or \
-                    (prediction == 'o' and actual_so > over_line)
+        # Determine if prediction was correct based on ML Side comparison
+        if ml_side == 'u':  # Under prediction
+            is_correct = actual_so < over_line
+        else:  # Over prediction
+            is_correct = actual_so > over_line
         
         # Calculate profit for $10 bet
         profit = 10 * (odds - 1) if is_correct else -10
@@ -49,10 +57,13 @@ def analyze_predictions(predictions_df, results_df):
         result = {
             'Pitcher': row['Player'],
             'Team': row['Team'],
-            'Prediction': f"{prediction.upper()} {over_line}",
+            'ML Side': ml_side.upper(),
+            'ML SO Pred': f"{ml_so_pred:.1f}",
+            'Line': over_line,
             'Actual': actual_so,
             'Odds': odds,
-            'Profit': profit
+            'Profit': profit,
+            'Confidence': confidence
         }
         
         if is_correct:
@@ -81,6 +92,10 @@ def create_email_content(predictions_df, results_df):
     # Analyze predictions
     correct_predictions, incorrect_predictions, total_profit, profit_by_pitcher = analyze_predictions(predictions_df, results_df)
     
+    # Sort predictions by confidence (highest to lowest)
+    correct_predictions.sort(key=lambda x: x['Confidence'], reverse=True)
+    incorrect_predictions.sort(key=lambda x: x['Confidence'], reverse=True)
+    
     # Create email content
     subject = "⚾ MLB Strikeout Predictions Results"
     
@@ -99,8 +114,11 @@ def create_email_content(predictions_df, results_df):
     <table border="1" cellpadding="5" cellspacing="0">
         <tr>
             <th>Pitcher (Team)</th>
-            <th>Prediction</th>
-            <th>Actual SO</th>
+            <th>ML Side</th>
+            <th>Line</th>
+            <th>Game SO</th>
+            <th>ML SO Pred</th>
+            <th>Confidence</th>
             <th>Odds</th>
             <th>Profit</th>
         </tr>
@@ -110,8 +128,11 @@ def create_email_content(predictions_df, results_df):
         html_body += f"""
         <tr>
             <td>{pred['Pitcher']} ({pred['Team']})</td>
-            <td>{pred['Prediction']}</td>
+            <td>{pred['ML Side']}</td>
+            <td>{pred['Line']}</td>
             <td>{pred['Actual']}</td>
+            <td>{pred['ML SO Pred']}</td>
+            <td>{pred['Confidence']:.1f}%</td>
             <td>{pred['Odds']:.1f}</td>
             <td>${pred['Profit']:.2f}</td>
         </tr>
@@ -124,8 +145,11 @@ def create_email_content(predictions_df, results_df):
     <table border="1" cellpadding="5" cellspacing="0">
         <tr>
             <th>Pitcher (Team)</th>
-            <th>Prediction</th>
-            <th>Actual SO</th>
+            <th>ML Side</th>
+            <th>Line</th>
+            <th>Game SO</th>
+            <th>ML SO Pred</th>
+            <th>Confidence</th>
             <th>Odds</th>
             <th>Loss</th>
         </tr>
@@ -135,10 +159,13 @@ def create_email_content(predictions_df, results_df):
         html_body += f"""
         <tr>
             <td>{pred['Pitcher']} ({pred['Team']})</td>
-            <td>{pred['Prediction']}</td>
+            <td>{pred['ML Side']}</td>
+            <td>{pred['Line']}</td>
             <td>{pred['Actual']}</td>
+            <td>{pred['ML SO Pred']}</td>
+            <td>{pred['Confidence']:.1f}%</td>
             <td>{pred['Odds']:.1f}</td>
-            <td>${pred['Profit']:.2f}</td>
+            <td>${abs(pred['Profit']):.2f}</td>
         </tr>
         """
     
@@ -158,12 +185,12 @@ Correct Predictions:
 """
     
     for pred in correct_predictions:
-        text_body += f"{pred['Pitcher']} ({pred['Team']}): {pred['Prediction']} | Actual: {pred['Actual']} | Odds: {pred['Odds']:.1f} | Profit: ${pred['Profit']:.2f}\n"
+        text_body += f"{pred['Pitcher']} ({pred['Team']}) | {pred['ML Side']} | {pred['Line']} | {pred['Actual']} | {pred['ML SO Pred']} | {pred['Confidence']:.1f}% | {pred['Odds']:.1f} | ${pred['Profit']:.2f}\n"
     
     text_body += "\nIncorrect Predictions:\n"
     
     for pred in incorrect_predictions:
-        text_body += f"{pred['Pitcher']} ({pred['Team']}): {pred['Prediction']} | Actual: {pred['Actual']} | Odds: {pred['Odds']:.1f} | Loss: ${abs(pred['Profit']):.2f}\n"
+        text_body += f"{pred['Pitcher']} ({pred['Team']}) | {pred['ML Side']} | {pred['Line']} | {pred['Actual']} | {pred['ML SO Pred']} | {pred['Confidence']:.1f}% | {pred['Odds']:.1f} | ${abs(pred['Profit']):.2f}\n"
     
     return subject, html_body, text_body
 
@@ -250,7 +277,7 @@ if __name__ == "__main__":
     # Get yesterday's date for the files
     today_date = datetime.now()
     yesterday_date = today_date - pd.Timedelta(days=1)
-    yesterday_date_str = yesterday_date.strftime("%Y_%m_%d")
+    yesterday_date_str = yesterday_date.strftime("%Y-%m-%d")
     
     predictions_filename = f"predicted_{yesterday_date_str}.csv"
     results_filename = f"game_results_{yesterday_date_str}.csv"
