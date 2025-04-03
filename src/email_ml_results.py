@@ -42,22 +42,30 @@ def analyze_predictions(predictions_df, results_df):
         ml_so_pred = row['ML Predict Value']
         over_line = row['Over Line']
         actual_so = row['REAL SO']
-        odds = row['Over Odds'] if ml_side == 'u' else row['Under Odds']
+        
+        # Use appropriate odds based on recommendation
+        odds = row['Under Odds'] if ml_side == 'Under' else row['Over Odds']
         confidence = row['ML Confidence Percentage']
         
-        # Determine if prediction was correct based on ML Side comparison
-        if ml_side == 'u':  # Under prediction
+        # Determine if prediction was correct
+        # For UNDER: actual SO must be LESS than the line
+        # For OVER: actual SO must be GREATER than the line
+        if ml_side == 'Under':  # Under prediction
             is_correct = actual_so < over_line
         else:  # Over prediction
             is_correct = actual_so > over_line
         
         # Calculate profit for $10 bet
-        profit = 10 * (odds - 1) if is_correct else -10
+        # If actual SO equals the line, it's a push (no profit/loss)
+        if actual_so == over_line:
+            profit = 0
+        else:
+            profit = 10 * (odds - 1) if is_correct else -10
         
         result = {
             'Pitcher': row['Player'],
             'Team': row['Team'],
-            'ML Side': ml_side.upper(),
+            'ML Side': ml_side,
             'ML SO Pred': f"{ml_so_pred:.1f}",
             'Line': over_line,
             'Actual': actual_so,

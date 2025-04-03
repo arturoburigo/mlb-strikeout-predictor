@@ -1,0 +1,25 @@
+Player,Name_abbreviation,Team,Over Line,Over Odds,Under Line,Under Odds,API Projected Value,API Recommended Side,Streak,Streak Type,Diff,ML Strikeout Line,ML Predict Value,ML Recommend Side,ML Confidence Percentage,Pitcher 2023
+Ben Lively,livelbe,CLE,2.5,2.15,3.5,1.65,3.97,over,2,under,1.47,3.0,4.906827947777116,Over,60.93172052222884,True
+Ryan Pepiot,pepiory,TBR,6.0,1.73,6.5,1.82,5.37,under,1,under,-1.13,6.25,5.938416937554845,Under,76.88416937554845,True
+Zac Gallen,galleza,ARI,5.5,1.89,6.5,1.53,5.42,under,1,under,-1.08,6.0,5.977582333653796,Under,79.77582333653797,True
+Garrett Crochet,crochga,BOS,6.5,1.67,7.5,1.7,6.45,under,2,under,-1.05,7.0,5.790582380025202,Under,67.90582380025202,True
+Bryce Elder,elderbr,ATL,3.5,1.85,3.5,1.98,4.36,over,1,under,0.86,3.5,4.922343548617505,Over,65.77656451382495,True
+Dylan Cease,ceasedy,SDP,6.0,1.73,6.5,1.7,6.78,over,1,over,0.78,6.25,6.040753092560059,Under,77.90753092560058,True
+Blake Snell,snellbl,LAD,7.5,2.05,7.5,1.96,6.75,under,1,under,-0.75,7.5,6.9985122777841475,Under,74.98512277784148,True
+Freddy Peralta,peralfr,MIL,5.5,1.61,6.5,1.68,6.25,over,2,over,0.75,6.0,6.2283016244712694,Over,77.7169837552873,True
+Luis Castillo,castilu,SEA,6.5,1.98,6.5,2.0,5.82,under,5,under,-0.68,6.5,5.97837874499526,Under,74.78378744995261,True
+Jeffrey Springs,sprinje,ATH,4.5,1.48,5.5,1.72,4.82,under,1,over,-0.68,5.0,5.932073300184167,Over,70.67926699815833,False
+Clay Holmes,holmecl,NYM,4.5,1.81,5.0,1.73,4.35,under,81,under,-0.65,4.75,0.9901871529804271,Under,42.401871529804275,True
+Carlos Rodon,rodonca,NYY,5.5,1.94,6.5,1.4,6.15,over,1,over,0.65,6.0,5.936439966969402,Under,79.36439966969402,True
+Kyle Freeland,freelky,COL,4.5,1.92,4.5,2.0,3.87,under,1,over,-0.63,4.5,3.973001370701667,Under,74.73001370701667,True
+Easton Lucas,lucasea,TOR,3.5,1.81,4.5,1.51,4.11,over,7,under,0.61,4.0,0.9996421841889473,Under,49.99642184188948,False
+Yusei Kikuchi,kikucyu,LAA,5.5,2.06,5.5,1.87,6.09,over,1,over,0.59,5.5,6.031957648509497,Over,74.68042351490503,True
+Sonny Gray,grayso,STL,5.5,2.4,6.5,1.67,6.08,over,5,over,0.58,6.0,6.993392081977547,Over,70.06607918022453,True
+Tarik Skubal,skubata,DET,7.5,2.15,7.5,1.91,6.98,under,1,over,-0.52,7.5,7.014164000494325,Under,75.14164000494326,True
+Landen Roupp,rouppla,SFG,4.0,1.73,4.5,2.0,4.52,over,1,over,0.52,4.25,2.0577435332376437,Under,58.07743533237644,False
+MacKenzie Gore,gorema,WSN,5.5,1.98,5.5,1.91,5.96,over,3,over,0.46,5.5,5.965905965451484,Over,75.34094034548517,True
+Pablo Lopez,lopezpa,MIN,6.0,1.73,6.5,1.83,6.07,under,1,under,-0.43,6.25,5.983655656358363,Under,77.33655656358364,True
+Paul Skenes,skenepa,PIT,7.5,1.9,7.5,1.95,7.1,under,3,under,-0.4,7.5,7.996364265780993,Over,75.03635734219007,False
+Zach Eflin,eflinza,BAL,4.5,1.67,5.0,1.73,4.88,over,3,under,0.38,4.75,5.593295921738632,Over,71.56704078261367,True
+Jack Leiter,leiteja,TEX,4.5,1.89,4.5,2.0,4.84,over,1,over,0.34,4.5,3.8220079778505025,Under,73.22007977850504,False
+Hunter Greene,greenhu,CIN,6.5,1.96,6.5,1.95,6.76,over,2,over,0.26,6.5,6.036144614074295,Under,75.36144614074296,True

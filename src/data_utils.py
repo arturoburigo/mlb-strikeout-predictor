@@ -1,6 +1,7 @@
 import pandas as pd
 import glob
 from datetime import datetime
+import numpy as np
 
 def load_data():
     """
@@ -35,10 +36,23 @@ def load_data():
         how='left'
     )
     
-    # Feature engineering
+    # Feature engineering with safety checks
+    # Replace zeros in IP to avoid division by zero
+    pitcher_data['IP'] = pitcher_data['IP'].replace(0, 0.1)
+    
+    # Calculate SO_per_IP with safety checks
     pitcher_data['SO_per_IP'] = pitcher_data['SO'] / pitcher_data['IP']
+    pitcher_data['SO_per_IP'] = pitcher_data['SO_per_IP'].replace([np.inf, -np.inf], 0)
+    pitcher_data['SO_per_IP'] = pitcher_data['SO_per_IP'].clip(0, 20)  # Cap at reasonable value
+    
+    # Calculate BB_per_IP with safety checks
     pitcher_data['BB_per_IP'] = pitcher_data['BB'] / pitcher_data['IP']
+    pitcher_data['BB_per_IP'] = pitcher_data['BB_per_IP'].replace([np.inf, -np.inf], 0)
+    pitcher_data['BB_per_IP'] = pitcher_data['BB_per_IP'].clip(0, 10)  # Cap at reasonable value
+    
+    # Calculate K-BB% with safety checks
     pitcher_data['K-BB%'] = pitcher_data['SO_per_IP'] - pitcher_data['BB_per_IP']
+    pitcher_data['K-BB%'] = pitcher_data['K-BB%'].clip(-10, 20)  # Cap at reasonable values
     
     # Merge with team stats
     pitcher_data = pitcher_data.merge(k_percentage_df, on='Team', how='left')
@@ -55,6 +69,18 @@ def load_data():
         'Team_K%': pitcher_data['Team_K%'].mean(),
         'Opp_K%': pitcher_data['Opp_K%'].mean()
     }, inplace=True)
+    
+    # Final check for any remaining infinity or extremely large values
+    for col in pitcher_data.columns:
+        if pitcher_data[col].dtype in [np.float64, np.int64]:
+            pitcher_data[col] = pitcher_data[col].replace([np.inf, -np.inf], 0)
+            # Clip extremely large values to reasonable ranges
+            if col in ['ERA', 'FIP']:
+                pitcher_data[col] = pitcher_data[col].clip(0, 20)
+            elif col in ['SO', 'SO_per_IP']:
+                pitcher_data[col] = pitcher_data[col].clip(0, 20)
+            elif col in ['IP']:
+                pitcher_data[col] = pitcher_data[col].clip(0.1, 10)
     
     return pitcher_data, k_percentage_df, betting_file
 

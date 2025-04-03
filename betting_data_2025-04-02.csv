@@ -1,0 +1,26 @@
+Player,Name_abbreviation,Team,Opponent,Home Team,Away Team,Over Line,Over Odds,Under Line,Under Odds,API Projected Value,API Recommended Side,Streak,Streak Type,Probability,Bet Rating,Diff
+Ben Lively,livelbe,CLE,SDP,CLE,SDP,2.5,2.15,3.5,1.65,3.97,over,2,under,0.56064700776335,5,1.47
+Ryan Pepiot,pepiory,TBR,PIT,PIT,TBR,6,1.73,6.5,1.82,5.37,under,1,under,,,-1.13
+Zac Gallen,galleza,ARI,N/A,N/A,N/A,5.5,1.89,6.5,1.53,5.42,under,1,under,,,-1.08
+Garrett Crochet,crochga,BOS,BAL,BOS,BAL,6.5,1.67,7.5,1.7,6.45,under,2,under,,,-1.05
+Sean Burke,burkese,CHW,MIN,MIN,CHW,4.5,1.56,5.5,1.71,4.45,under,1,under,,,-1.05
+Bryce Elder,elderbr,ATL,N/A,N/A,N/A,3.5,1.85,3.5,1.98,4.36,over,1,under,,,0.86
+Dylan Cease,ceasedy,SDP,CLE,CLE,SDP,6,1.73,6.5,1.7,6.78,over,1,over,,,0.78
+Blake Snell,snellbl,LAD,N/A,N/A,N/A,7.5,2.05,7.5,1.96,6.75,under,1,under,,,-0.75
+Freddy Peralta,peralfr,MIL,KCR,KCR,MIL,5.5,1.61,6.5,1.68,6.25,over,2,over,,,0.75
+Luis Castillo,castilu,SEA,DET,DET,SEA,6.5,1.98,6.5,2.0,5.82,under,5,under,,,-0.68
+Jeffrey Springs,sprinje,ATH,CHC,CHC,ATH,4.5,1.48,5.5,1.72,4.82,under,1,over,,,-0.68
+Clay Holmes,holmecl,NYM,MIA,NYM,MIA,4.5,1.81,5,1.73,4.35,under,81,under,,,-0.65
+Carlos Rodon,rodonca,NYY,N/A,N/A,N/A,5.5,1.94,6.5,1.4,6.15,over,1,over,,,0.65
+Kyle Freeland,freelky,COL,PHI,COL,PHI,4.5,1.92,4.5,2.0,3.87,under,1,over,,,-0.63
+Easton Lucas,lucasea,TOR,WSN,WSN,TOR,3.5,1.81,4.5,1.51,4.11,over,7,under,,,0.61
+Yusei Kikuchi,kikucyu,LAA,STL,LAA,STL,5.5,2.06,5.5,1.87,6.09,over,1,over,,,0.59
+Sonny Gray,grayso,STL,LAA,LAA,STL,5.5,2.4,6.5,1.67,6.08,over,5,over,,,0.58
+Tarik Skubal,skubata,DET,SEA,DET,SEA,7.5,2.15,7.5,1.91,6.98,under,1,over,,,-0.52
+Landen Roupp,rouppla,SFG,HOU,SFG,HOU,4,1.73,4.5,2.0,4.52,over,1,over,,,0.52
+MacKenzie Gore,gorema,WSN,TOR,WSN,TOR,5.5,1.98,5.5,1.91,5.96,over,3,over,,,0.46
+Pablo Lopez,lopezpa,MIN,CHW,MIN,CHW,6,1.73,6.5,1.83,6.07,under,1,under,,,-0.43
+Paul Skenes,skenepa,PIT,TBR,PIT,TBR,7.5,1.9,7.5,1.95,7.1,under,3,under,,,-0.4
+Zach Eflin,eflinza,BAL,BOS,BOS,BAL,4.5,1.67,5,1.73,4.88,over,3,under,,,0.38
+Jack Leiter,leiteja,TEX,CIN,TEX,CIN,4.5,1.89,4.5,2.0,4.84,over,1,over,,,0.34
+Hunter Greene,greenhu,CIN,TEX,TEX,CIN,6.5,1.96,6.5,1.95,6.76,over,2,over,,,0.26

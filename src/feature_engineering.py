@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 
 def calculate_weighted_performance(pitcher_data, current_season, last_season=None):
     """
@@ -122,11 +123,22 @@ def main(pitchers_df, k_percentage_df):
         # Convert the dictionary to a DataFrame
         engineered_data = pd.DataFrame.from_dict(all_weighted_stats, orient='index')
         
-        # Add derived features
+        # Add derived features with safety checks to avoid division by zero and infinity values
         engineered_data['IP'] = engineered_data['IP'].replace(0, 1)  # Avoid division by zero
+        
+        # Calculate SO_per_IP with safety checks
         engineered_data['SO_per_IP'] = engineered_data['SO'] / engineered_data['IP']
+        engineered_data['SO_per_IP'] = engineered_data['SO_per_IP'].replace([np.inf, -np.inf], 0)
+        engineered_data['SO_per_IP'] = engineered_data['SO_per_IP'].clip(0, 20)  # Cap at reasonable value
+        
+        # Calculate BB_per_IP with safety checks
         engineered_data['BB_per_IP'] = engineered_data['BB'] / engineered_data['IP']
+        engineered_data['BB_per_IP'] = engineered_data['BB_per_IP'].replace([np.inf, -np.inf], 0)
+        engineered_data['BB_per_IP'] = engineered_data['BB_per_IP'].clip(0, 10)  # Cap at reasonable value
+        
+        # Calculate K-BB% with safety checks
         engineered_data['K-BB%'] = engineered_data['SO_per_IP'] - engineered_data['BB_per_IP']
+        engineered_data['K-BB%'] = engineered_data['K-BB%'].clip(-10, 20)  # Cap at reasonable values
         
         # Merge with k_percentage_df if needed
         if not k_percentage_df.empty:
@@ -148,6 +160,18 @@ def main(pitchers_df, k_percentage_df):
         for feature in required_features:
             if feature not in engineered_data.columns:
                 engineered_data[feature] = 0
+        
+        # Final check for any remaining infinity or extremely large values
+        for col in engineered_data.columns:
+            if engineered_data[col].dtype in [np.float64, np.int64]:
+                engineered_data[col] = engineered_data[col].replace([np.inf, -np.inf], 0)
+                # Clip extremely large values to reasonable ranges
+                if col in ['ERA', 'FIP']:
+                    engineered_data[col] = engineered_data[col].clip(0, 20)
+                elif col in ['SO_rolling_5', 'SO_rolling_10', 'Home_SO', 'Away_SO']:
+                    engineered_data[col] = engineered_data[col].clip(0, 20)
+                elif col in ['Home_IP', 'Away_IP']:
+                    engineered_data[col] = engineered_data[col].clip(0, 10)
         
         print(f"\nSuccessfully calculated weighted stats for {len(all_weighted_stats)} pitchers")
         return engineered_data
