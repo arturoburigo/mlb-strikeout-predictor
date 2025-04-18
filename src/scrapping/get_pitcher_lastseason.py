@@ -124,4 +124,7 @@ def load_pitcher_data():
     else:
         print("No new data to save.")
 
+if __name__ == "__main__":
+    load_pitcher_data()
+
 

@@ -74,7 +74,7 @@ def collect_team_strikeout_data(start_year, end_year):
     return results_df
 
 if __name__ == "__main__":
-    results = collect_team_strikeout_data(2023, 2023)
+    results = collect_team_strikeout_data(2023, 2024)
     print(results)
 
 

@@ -6,3 +6,5 @@ __pycache__/
 *.pyd
 .Python
 *.so
+*.csv
+!team_strikeout_percentage.csv
