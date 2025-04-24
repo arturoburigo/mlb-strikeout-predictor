@@ -1,0 +1,773 @@
+2025-04-18 13:07:20,586 - Iniciando bot...
+2025-04-18 13:07:21,236 - Bot conectado: BettingClubLittleEvils_bot
+2025-04-18 13:07:21,240 - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2025-04-18 13:07:21,240 - Added job "Enviar mensagem diária" to job store "default"
+2025-04-18 13:07:21,240 - Scheduler started
+2025-04-18 13:07:21,240 - Erro no bot: Unknown format code 'd' for object of type 'str'
+2025-04-18 13:07:21,240 - Scheduler has been shut down
+2025-04-18 13:07:21,240 - Bot encerrado
+2025-04-18 13:07:48,006 - Iniciando bot...
+2025-04-18 13:07:48,735 - Bot conectado: BettingClubLittleEvils_bot
+2025-04-18 13:07:48,740 - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2025-04-18 13:07:48,740 - Added job "Enviar mensagem diária" to job store "default"
+2025-04-18 13:07:48,740 - Scheduler started
+2025-04-18 13:07:48,741 - Mensagem agendada para 13:02 (horário de São Paulo)
+2025-04-18 13:07:53,288 - Threaded polling exception: A request to the Telegram API was unsuccessful. Error code: 409. Description: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2025-04-18 13:07:53,289 - Exception traceback:
+Traceback (most recent call last):
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/__init__.py", line 1234, in __threaded_polling
+    polling_thread.raise_exceptions()
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/util.py", line 111, in raise_exceptions
+    raise self.exception_info
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/util.py", line 93, in run
+    task(*args, **kwargs)
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/__init__.py", line 688, in __retrieve_updates
+    updates = self.get_updates(offset=(self.last_update_id + 1),
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/__init__.py", line 660, in get_updates
+    json_updates = apihelper.get_updates(
+                   ^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/apihelper.py", line 332, in get_updates
+    return _make_request(token, method_url, params=payload)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/apihelper.py", line 168, in _make_request
+    json_result = _check_result(method_name, result)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/apihelper.py", line 195, in _check_result
+    raise ApiTelegramException(method_name, result, result_json)
+telebot.apihelper.ApiTelegramException: A request to the Telegram API was unsuccessful. Error code: 409. Description: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+
+2025-04-18 13:07:57,520 - Threaded polling exception: A request to the Telegram API was unsuccessful. Error code: 409. Description: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2025-04-18 13:07:57,521 - Exception traceback:
+Traceback (most recent call last):
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/__init__.py", line 1234, in __threaded_polling
+    polling_thread.raise_exceptions()
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/util.py", line 111, in raise_exceptions
+    raise self.exception_info
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/util.py", line 93, in run
+    task(*args, **kwargs)
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/__init__.py", line 688, in __retrieve_updates
+    updates = self.get_updates(offset=(self.last_update_id + 1),
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/__init__.py", line 660, in get_updates
+    json_updates = apihelper.get_updates(
+                   ^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/apihelper.py", line 332, in get_updates
+    return _make_request(token, method_url, params=payload)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/apihelper.py", line 168, in _make_request
+    json_result = _check_result(method_name, result)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/apihelper.py", line 195, in _check_result
+    raise ApiTelegramException(method_name, result, result_json)
+telebot.apihelper.ApiTelegramException: A request to the Telegram API was unsuccessful. Error code: 409. Description: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+
+2025-04-18 13:08:02,478 - Threaded polling exception: A request to the Telegram API was unsuccessful. Error code: 409. Description: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2025-04-18 13:08:02,479 - Exception traceback:
+Traceback (most recent call last):
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/__init__.py", line 1234, in __threaded_polling
+    polling_thread.raise_exceptions()
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/util.py", line 111, in raise_exceptions
+    raise self.exception_info
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/util.py", line 93, in run
+    task(*args, **kwargs)
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/__init__.py", line 688, in __retrieve_updates
+    updates = self.get_updates(offset=(self.last_update_id + 1),
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/__init__.py", line 660, in get_updates
+    json_updates = apihelper.get_updates(
+                   ^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/apihelper.py", line 332, in get_updates
+    return _make_request(token, method_url, params=payload)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/apihelper.py", line 168, in _make_request
+    json_result = _check_result(method_name, result)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/apihelper.py", line 195, in _check_result
+    raise ApiTelegramException(method_name, result, result_json)
+telebot.apihelper.ApiTelegramException: A request to the Telegram API was unsuccessful. Error code: 409. Description: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+
+2025-04-18 13:08:08,939 - Threaded polling exception: A request to the Telegram API was unsuccessful. Error code: 409. Description: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2025-04-18 13:08:08,939 - Exception traceback:
+Traceback (most recent call last):
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/__init__.py", line 1234, in __threaded_polling
+    polling_thread.raise_exceptions()
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/util.py", line 111, in raise_exceptions
+    raise self.exception_info
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/util.py", line 93, in run
+    task(*args, **kwargs)
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/__init__.py", line 688, in __retrieve_updates
+    updates = self.get_updates(offset=(self.last_update_id + 1),
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/__init__.py", line 660, in get_updates
+    json_updates = apihelper.get_updates(
+                   ^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/apihelper.py", line 332, in get_updates
+    return _make_request(token, method_url, params=payload)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/apihelper.py", line 168, in _make_request
+    json_result = _check_result(method_name, result)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/apihelper.py", line 195, in _check_result
+    raise ApiTelegramException(method_name, result, result_json)
+telebot.apihelper.ApiTelegramException: A request to the Telegram API was unsuccessful. Error code: 409. Description: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+
+2025-04-18 13:08:15,420 - Threaded polling exception: A request to the Telegram API was unsuccessful. Error code: 409. Description: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2025-04-18 13:08:15,420 - Exception traceback:
+Traceback (most recent call last):
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/__init__.py", line 1234, in __threaded_polling
+    polling_thread.raise_exceptions()
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/util.py", line 111, in raise_exceptions
+    raise self.exception_info
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/util.py", line 93, in run
+    task(*args, **kwargs)
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/__init__.py", line 688, in __retrieve_updates
+    updates = self.get_updates(offset=(self.last_update_id + 1),
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/__init__.py", line 660, in get_updates
+    json_updates = apihelper.get_updates(
+                   ^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/apihelper.py", line 332, in get_updates
+    return _make_request(token, method_url, params=payload)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/apihelper.py", line 168, in _make_request
+    json_result = _check_result(method_name, result)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/apihelper.py", line 195, in _check_result
+    raise ApiTelegramException(method_name, result, result_json)
+telebot.apihelper.ApiTelegramException: A request to the Telegram API was unsuccessful. Error code: 409. Description: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+
+2025-04-18 13:08:27,887 - Threaded polling exception: A request to the Telegram API was unsuccessful. Error code: 409. Description: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2025-04-18 13:08:27,887 - Exception traceback:
+Traceback (most recent call last):
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/__init__.py", line 1234, in __threaded_polling
+    polling_thread.raise_exceptions()
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/util.py", line 111, in raise_exceptions
+    raise self.exception_info
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/util.py", line 93, in run
+    task(*args, **kwargs)
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/__init__.py", line 688, in __retrieve_updates
+    updates = self.get_updates(offset=(self.last_update_id + 1),
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/__init__.py", line 660, in get_updates
+    json_updates = apihelper.get_updates(
+                   ^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/apihelper.py", line 332, in get_updates
+    return _make_request(token, method_url, params=payload)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/apihelper.py", line 168, in _make_request
+    json_result = _check_result(method_name, result)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/apihelper.py", line 195, in _check_result
+    raise ApiTelegramException(method_name, result, result_json)
+telebot.apihelper.ApiTelegramException: A request to the Telegram API was unsuccessful. Error code: 409. Description: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+
+2025-04-18 13:08:52,356 - Threaded polling exception: A request to the Telegram API was unsuccessful. Error code: 409. Description: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2025-04-18 13:08:52,357 - Exception traceback:
+Traceback (most recent call last):
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/__init__.py", line 1234, in __threaded_polling
+    polling_thread.raise_exceptions()
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/util.py", line 111, in raise_exceptions
+    raise self.exception_info
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/util.py", line 93, in run
+    task(*args, **kwargs)
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/__init__.py", line 688, in __retrieve_updates
+    updates = self.get_updates(offset=(self.last_update_id + 1),
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/__init__.py", line 660, in get_updates
+    json_updates = apihelper.get_updates(
+                   ^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/apihelper.py", line 332, in get_updates
+    return _make_request(token, method_url, params=payload)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/apihelper.py", line 168, in _make_request
+    json_result = _check_result(method_name, result)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/apihelper.py", line 195, in _check_result
+    raise ApiTelegramException(method_name, result, result_json)
+telebot.apihelper.ApiTelegramException: A request to the Telegram API was unsuccessful. Error code: 409. Description: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+
+2025-04-18 13:09:08,845 - Scheduler has been shut down
+2025-04-18 13:09:08,845 - Bot encerrado
+2025-04-18 13:09:13,849 - Iniciando bot...
+2025-04-18 13:09:14,530 - Bot conectado: BettingClubLittleEvils_bot
+2025-04-18 13:09:14,539 - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2025-04-18 13:09:14,539 - Added job "Enviar mensagem diária" to job store "default"
+2025-04-18 13:09:14,539 - Scheduler started
+2025-04-18 13:09:14,540 - Mensagem agendada para 13:02 (horário de São Paulo)
+2025-04-18 13:10:48,976 - Scheduler has been shut down
+2025-04-18 13:10:48,979 - Bot encerrado
+2025-04-18 13:11:59,570 - Iniciando bot...
+2025-04-18 13:12:00,239 - Bot conectado: BettingClubLittleEvils_bot
+2025-04-18 13:12:00,245 - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2025-04-18 13:12:00,246 - Added job "Enviar mensagem diária" to job store "default"
+2025-04-18 13:12:00,246 - Scheduler started
+2025-04-18 13:12:00,246 - Mensagem agendada para 13:10 (horário de São Paulo)
+2025-04-18 13:12:12,451 - Scheduler has been shut down
+2025-04-18 13:12:12,452 - Bot encerrado
+2025-04-18 13:13:09,837 - Iniciando bot...
+2025-04-18 13:13:10,431 - Bot conectado: BettingClubLittleEvils_bot
+2025-04-18 13:13:10,436 - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2025-04-18 13:13:10,436 - Added job "Enviar mensagem diária" to job store "default"
+2025-04-18 13:13:10,436 - Scheduler started
+2025-04-18 13:13:10,436 - Mensagem agendada para 13:10 (horário de São Paulo)
+2025-04-18 13:13:12,676 - Scheduler has been shut down
+2025-04-18 13:13:12,677 - Bot encerrado
+2025-04-18 13:19:47,377 - Iniciando bot...
+2025-04-18 13:19:48,102 - Bot conectado: BettingClubLittleEvils_bot
+2025-04-18 13:19:48,108 - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2025-04-18 13:19:48,108 - Added job "Enviar mensagem diária" to job store "default"
+2025-04-18 13:19:48,109 - Scheduler started
+2025-04-18 13:19:48,109 - Mensagem agendada para 13:14 (horário de São Paulo)
+2025-04-18 13:19:52,217 - Scheduler has been shut down
+2025-04-18 13:19:52,218 - Bot encerrado
+2025-04-18 13:20:00,796 - Iniciando bot...
+2025-04-18 13:20:01,508 - Bot conectado: BettingClubLittleEvils_bot
+2025-04-18 13:20:01,517 - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2025-04-18 13:20:01,518 - Added job "Enviar mensagem diária" to job store "default"
+2025-04-18 13:20:01,518 - Scheduler started
+2025-04-18 13:20:01,518 - Mensagem agendada para 13:14 (horário de São Paulo)
+2025-04-18 13:20:11,995 - Scheduler has been shut down
+2025-04-18 13:20:11,995 - Bot encerrado
+2025-04-18 13:20:27,466 - Iniciando bot...
+2025-04-18 13:20:28,144 - Bot conectado: BettingClubLittleEvils_bot
+2025-04-18 13:20:28,147 - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2025-04-18 13:20:28,147 - Added job "Enviar mensagem diária" to job store "default"
+2025-04-18 13:20:28,148 - Scheduler started
+2025-04-18 13:20:28,148 - Mensagem agendada para 13:21 (horário de São Paulo)
+2025-04-18 13:21:00,006 - Running job "Enviar mensagem diária (trigger: cron[hour='13', minute='21'], next run at: 2025-04-18 13:21:00 -03)" (scheduled at 2025-04-18 13:21:00-03:00)
+2025-04-18 13:21:00,006 - Enviando mensagem agendada às 13:21:00
+2025-04-18 13:21:11,864 - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-18 13:21:13,404 - Arquivo CSV enviado com sucesso para o chat_id: 6809356347
+2025-04-18 13:21:13,404 - Mensagem enviada com sucesso para o chat_id: 6809356347
+2025-04-18 13:21:14,342 - Arquivo CSV enviado com sucesso para o chat_id: 6481496106
+2025-04-18 13:21:14,343 - Mensagem enviada com sucesso para o chat_id: 6481496106
+2025-04-18 13:21:14,626 - Erro ao enviar mensagem/arquivo para o chat_id -4753736034: A request to the Telegram API was unsuccessful. Error code: 400. Description: Bad Request: group chat was upgraded to a supergroup chat
+2025-04-18 13:21:14,627 - Job "Enviar mensagem diária (trigger: cron[hour='13', minute='21'], next run at: 2025-04-19 13:21:00 -03)" executed successfully
+2025-04-18 13:23:20,020 - Scheduler has been shut down
+2025-04-18 13:23:20,021 - Bot encerrado
+2025-04-18 13:23:23,783 - Iniciando bot...
+2025-04-18 13:23:24,446 - Bot conectado: BettingClubLittleEvils_bot
+2025-04-18 13:23:24,454 - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2025-04-18 13:23:24,454 - Added job "Enviar mensagem diária" to job store "default"
+2025-04-18 13:23:24,454 - Scheduler started
+2025-04-18 13:23:24,455 - Mensagem agendada para 13:24 (horário de São Paulo)
+2025-04-18 13:24:00,009 - Running job "Enviar mensagem diária (trigger: cron[hour='13', minute='24'], next run at: 2025-04-18 13:24:00 -03)" (scheduled at 2025-04-18 13:24:00-03:00)
+2025-04-18 13:24:00,009 - Enviando mensagem agendada às 13:24:00
+2025-04-18 13:24:11,830 - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-18 13:24:13,201 - Arquivo CSV enviado com sucesso para o chat_id: 6809356347
+2025-04-18 13:24:13,202 - Mensagem enviada com sucesso para o chat_id: 6809356347
+2025-04-18 13:24:14,081 - Arquivo CSV enviado com sucesso para o chat_id: 6481496106
+2025-04-18 13:24:14,081 - Mensagem enviada com sucesso para o chat_id: 6481496106
+2025-04-18 13:24:14,334 - Erro ao processar a atualização do supergrupo: Expecting value: line 1 column 1 (char 0)
+2025-04-18 13:24:14,334 - Job "Enviar mensagem diária (trigger: cron[hour='13', minute='24'], next run at: 2025-04-19 13:24:00 -03)" executed successfully
+2025-04-18 13:25:18,716 - Scheduler has been shut down
+2025-04-18 13:25:18,718 - Bot encerrado
+2025-04-18 13:25:23,738 - Iniciando bot...
+2025-04-18 13:25:24,391 - Bot conectado: BettingClubLittleEvils_bot
+2025-04-18 13:25:24,394 - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2025-04-18 13:25:24,394 - Added job "Enviar mensagem diária" to job store "default"
+2025-04-18 13:25:24,394 - Scheduler started
+2025-04-18 13:25:24,394 - Mensagem agendada para 13:26 (horário de São Paulo)
+2025-04-18 13:26:00,006 - Running job "Enviar mensagem diária (trigger: cron[hour='13', minute='26'], next run at: 2025-04-18 13:26:00 -03)" (scheduled at 2025-04-18 13:26:00-03:00)
+2025-04-18 13:26:00,007 - Enviando mensagem agendada às 13:26:00
+2025-04-18 13:26:17,922 - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-18 13:26:19,472 - Arquivo CSV enviado com sucesso para o chat_id: 6809356347
+2025-04-18 13:26:19,473 - Mensagem enviada com sucesso para o chat_id: 6809356347
+2025-04-18 13:26:20,405 - Arquivo CSV enviado com sucesso para o chat_id: 6481496106
+2025-04-18 13:26:20,405 - Mensagem enviada com sucesso para o chat_id: 6481496106
+2025-04-18 13:26:20,631 - Não foi possível obter o novo chat_id do supergrupo para -4753736034
+2025-04-18 13:26:20,632 - Job "Enviar mensagem diária (trigger: cron[hour='13', minute='26'], next run at: 2025-04-19 13:26:00 -03)" executed successfully
+2025-04-18 13:26:36,792 - Scheduler has been shut down
+2025-04-18 13:26:36,792 - Bot encerrado
+2025-04-18 13:30:03,978 - Iniciando bot...
+2025-04-18 13:30:04,705 - Bot conectado: BettingClubLittleEvils_bot
+2025-04-18 13:30:04,711 - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2025-04-18 13:30:04,711 - Added job "Enviar mensagem diária" to job store "default"
+2025-04-18 13:30:04,711 - Scheduler started
+2025-04-18 13:30:04,711 - Mensagem agendada para 13:31 (horário de São Paulo)
+2025-04-18 13:30:05,551 - Threaded polling exception: A request to the Telegram API was unsuccessful. Error code: 409. Description: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2025-04-18 13:30:05,551 - Exception traceback:
+Traceback (most recent call last):
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/__init__.py", line 1234, in __threaded_polling
+    polling_thread.raise_exceptions()
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/util.py", line 111, in raise_exceptions
+    raise self.exception_info
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/util.py", line 93, in run
+    task(*args, **kwargs)
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/__init__.py", line 688, in __retrieve_updates
+    updates = self.get_updates(offset=(self.last_update_id + 1),
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/__init__.py", line 660, in get_updates
+    json_updates = apihelper.get_updates(
+                   ^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/apihelper.py", line 332, in get_updates
+    return _make_request(token, method_url, params=payload)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/apihelper.py", line 168, in _make_request
+    json_result = _check_result(method_name, result)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/apihelper.py", line 195, in _check_result
+    raise ApiTelegramException(method_name, result, result_json)
+telebot.apihelper.ApiTelegramException: A request to the Telegram API was unsuccessful. Error code: 409. Description: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+
+2025-04-18 13:31:00,008 - Running job "Enviar mensagem diária (trigger: cron[hour='13', minute='31'], next run at: 2025-04-18 13:31:00 -03)" (scheduled at 2025-04-18 13:31:00-03:00)
+2025-04-18 13:31:00,010 - Enviando mensagem agendada às 13:31:00
+2025-04-18 13:31:09,792 - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-18 13:31:11,404 - Arquivo CSV enviado com sucesso para o chat_id: 6809356347
+2025-04-18 13:31:11,405 - Mensagem enviada com sucesso para o chat_id: 6809356347
+2025-04-18 13:31:12,375 - Arquivo CSV enviado com sucesso para o chat_id: 6481496106
+2025-04-18 13:31:12,376 - Mensagem enviada com sucesso para o chat_id: 6481496106
+2025-04-18 13:31:13,384 - Arquivo CSV enviado com sucesso para o chat_id: -1002254474701
+2025-04-18 13:31:13,384 - Mensagem enviada com sucesso para o chat_id: -1002254474701
+2025-04-18 13:31:13,384 - Job "Enviar mensagem diária (trigger: cron[hour='13', minute='31'], next run at: 2025-04-19 13:31:00 -03)" executed successfully
+2025-04-18 13:32:36,287 - Scheduler has been shut down
+2025-04-18 13:32:36,287 - Bot encerrado
+2025-04-18 13:41:41,415 - Iniciando bot...
+2025-04-18 13:41:42,099 - Bot conectado: BettingClubLittleEvils_bot
+2025-04-18 13:41:42,105 - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2025-04-18 13:41:42,105 - Added job "Enviar mensagem diária" to job store "default"
+2025-04-18 13:41:42,106 - Scheduler started
+2025-04-18 13:41:42,106 - Mensagem agendada para 13:31 (horário de São Paulo)
+2025-04-18 13:41:47,484 - Scheduler has been shut down
+2025-04-18 13:41:47,484 - Bot encerrado
+2025-04-18 13:42:20,885 - Iniciando bot...
+2025-04-18 13:42:21,564 - Bot conectado: BettingClubLittleEvils_bot
+2025-04-18 13:42:21,577 - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2025-04-18 13:42:21,577 - Added job "Enviar mensagem diária" to job store "default"
+2025-04-18 13:42:21,577 - Scheduler started
+2025-04-18 13:42:21,578 - Mensagem agendada para 13:44 (horário de São Paulo)
+2025-04-18 13:44:00,009 - Running job "Enviar mensagem diária (trigger: cron[hour='13', minute='44'], next run at: 2025-04-18 13:44:00 -03)" (scheduled at 2025-04-18 13:44:00-03:00)
+2025-04-18 13:44:00,012 - Enviando mensagem agendada às 13:44:00
+2025-04-18 13:44:14,889 - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-18 13:44:16,270 - Arquivo CSV enviado com sucesso para o chat_id: 6809356347
+2025-04-18 13:44:16,270 - Mensagem enviada com sucesso para o chat_id: 6809356347
+2025-04-18 13:44:17,250 - Arquivo CSV enviado com sucesso para o chat_id: 6481496106
+2025-04-18 13:44:17,250 - Mensagem enviada com sucesso para o chat_id: 6481496106
+2025-04-18 13:44:18,268 - Arquivo CSV enviado com sucesso para o chat_id: -1002254474701
+2025-04-18 13:44:18,269 - Mensagem enviada com sucesso para o chat_id: -1002254474701
+2025-04-18 13:44:18,269 - Job "Enviar mensagem diária (trigger: cron[hour='13', minute='44'], next run at: 2025-04-19 13:44:00 -03)" executed successfully
+2025-04-18 13:49:49,057 - Iniciando bot...
+2025-04-18 13:49:49,705 - Bot conectado: BettingClubLittleEvils_bot
+2025-04-18 13:49:49,708 - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2025-04-18 13:49:49,708 - Added job "Enviar mensagem diária" to job store "default"
+2025-04-18 13:49:49,708 - Scheduler started
+2025-04-18 13:49:49,708 - Mensagem agendada para 13:50 (horário de São Paulo)
+2025-04-18 13:49:50,587 - Threaded polling exception: A request to the Telegram API was unsuccessful. Error code: 409. Description: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2025-04-18 13:49:50,588 - Exception traceback:
+Traceback (most recent call last):
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/__init__.py", line 1234, in __threaded_polling
+    polling_thread.raise_exceptions()
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/util.py", line 111, in raise_exceptions
+    raise self.exception_info
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/util.py", line 93, in run
+    task(*args, **kwargs)
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/__init__.py", line 688, in __retrieve_updates
+    updates = self.get_updates(offset=(self.last_update_id + 1),
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/__init__.py", line 660, in get_updates
+    json_updates = apihelper.get_updates(
+                   ^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/apihelper.py", line 332, in get_updates
+    return _make_request(token, method_url, params=payload)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/apihelper.py", line 168, in _make_request
+    json_result = _check_result(method_name, result)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/apihelper.py", line 195, in _check_result
+    raise ApiTelegramException(method_name, result, result_json)
+telebot.apihelper.ApiTelegramException: A request to the Telegram API was unsuccessful. Error code: 409. Description: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+
+2025-04-18 13:49:54,080 - Threaded polling exception: A request to the Telegram API was unsuccessful. Error code: 409. Description: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2025-04-18 13:49:54,081 - Exception traceback:
+Traceback (most recent call last):
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/__init__.py", line 1234, in __threaded_polling
+    polling_thread.raise_exceptions()
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/util.py", line 111, in raise_exceptions
+    raise self.exception_info
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/util.py", line 93, in run
+    task(*args, **kwargs)
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/__init__.py", line 688, in __retrieve_updates
+    updates = self.get_updates(offset=(self.last_update_id + 1),
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/__init__.py", line 660, in get_updates
+    json_updates = apihelper.get_updates(
+                   ^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/apihelper.py", line 332, in get_updates
+    return _make_request(token, method_url, params=payload)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/apihelper.py", line 168, in _make_request
+    json_result = _check_result(method_name, result)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/apihelper.py", line 195, in _check_result
+    raise ApiTelegramException(method_name, result, result_json)
+telebot.apihelper.ApiTelegramException: A request to the Telegram API was unsuccessful. Error code: 409. Description: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+
+2025-04-18 13:49:54,561 - Threaded polling exception: A request to the Telegram API was unsuccessful. Error code: 409. Description: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2025-04-18 13:49:54,562 - Exception traceback:
+Traceback (most recent call last):
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/__init__.py", line 1234, in __threaded_polling
+    polling_thread.raise_exceptions()
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/util.py", line 111, in raise_exceptions
+    raise self.exception_info
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/util.py", line 93, in run
+    task(*args, **kwargs)
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/__init__.py", line 688, in __retrieve_updates
+    updates = self.get_updates(offset=(self.last_update_id + 1),
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/__init__.py", line 660, in get_updates
+    json_updates = apihelper.get_updates(
+                   ^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/apihelper.py", line 332, in get_updates
+    return _make_request(token, method_url, params=payload)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/apihelper.py", line 168, in _make_request
+    json_result = _check_result(method_name, result)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/apihelper.py", line 195, in _check_result
+    raise ApiTelegramException(method_name, result, result_json)
+telebot.apihelper.ApiTelegramException: A request to the Telegram API was unsuccessful. Error code: 409. Description: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+
+2025-04-18 13:49:58,293 - Threaded polling exception: A request to the Telegram API was unsuccessful. Error code: 409. Description: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2025-04-18 13:49:58,294 - Exception traceback:
+Traceback (most recent call last):
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/__init__.py", line 1234, in __threaded_polling
+    polling_thread.raise_exceptions()
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/util.py", line 111, in raise_exceptions
+    raise self.exception_info
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/util.py", line 93, in run
+    task(*args, **kwargs)
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/__init__.py", line 688, in __retrieve_updates
+    updates = self.get_updates(offset=(self.last_update_id + 1),
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/__init__.py", line 660, in get_updates
+    json_updates = apihelper.get_updates(
+                   ^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/apihelper.py", line 332, in get_updates
+    return _make_request(token, method_url, params=payload)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/apihelper.py", line 168, in _make_request
+    json_result = _check_result(method_name, result)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/apihelper.py", line 195, in _check_result
+    raise ApiTelegramException(method_name, result, result_json)
+telebot.apihelper.ApiTelegramException: A request to the Telegram API was unsuccessful. Error code: 409. Description: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+
+2025-04-18 13:49:59,022 - Threaded polling exception: A request to the Telegram API was unsuccessful. Error code: 409. Description: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2025-04-18 13:49:59,023 - Exception traceback:
+Traceback (most recent call last):
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/__init__.py", line 1234, in __threaded_polling
+    polling_thread.raise_exceptions()
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/util.py", line 111, in raise_exceptions
+    raise self.exception_info
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/util.py", line 93, in run
+    task(*args, **kwargs)
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/__init__.py", line 688, in __retrieve_updates
+    updates = self.get_updates(offset=(self.last_update_id + 1),
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/__init__.py", line 660, in get_updates
+    json_updates = apihelper.get_updates(
+                   ^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/apihelper.py", line 332, in get_updates
+    return _make_request(token, method_url, params=payload)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/apihelper.py", line 168, in _make_request
+    json_result = _check_result(method_name, result)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/apihelper.py", line 195, in _check_result
+    raise ApiTelegramException(method_name, result, result_json)
+telebot.apihelper.ApiTelegramException: A request to the Telegram API was unsuccessful. Error code: 409. Description: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+
+2025-04-18 13:50:00,001 - Running job "Enviar mensagem diária (trigger: cron[hour='13', minute='50'], next run at: 2025-04-18 13:50:00 -03)" (scheduled at 2025-04-18 13:50:00-03:00)
+2025-04-18 13:50:00,001 - Enviando mensagem agendada às 13:50:00
+2025-04-18 13:50:03,250 - Threaded polling exception: A request to the Telegram API was unsuccessful. Error code: 409. Description: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2025-04-18 13:50:03,253 - Exception traceback:
+Traceback (most recent call last):
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/__init__.py", line 1234, in __threaded_polling
+    polling_thread.raise_exceptions()
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/util.py", line 111, in raise_exceptions
+    raise self.exception_info
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/util.py", line 93, in run
+    task(*args, **kwargs)
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/__init__.py", line 688, in __retrieve_updates
+    updates = self.get_updates(offset=(self.last_update_id + 1),
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/__init__.py", line 660, in get_updates
+    json_updates = apihelper.get_updates(
+                   ^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/apihelper.py", line 332, in get_updates
+    return _make_request(token, method_url, params=payload)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/apihelper.py", line 168, in _make_request
+    json_result = _check_result(method_name, result)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/apihelper.py", line 195, in _check_result
+    raise ApiTelegramException(method_name, result, result_json)
+telebot.apihelper.ApiTelegramException: A request to the Telegram API was unsuccessful. Error code: 409. Description: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+
+2025-04-18 13:50:04,484 - Threaded polling exception: A request to the Telegram API was unsuccessful. Error code: 409. Description: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2025-04-18 13:50:04,485 - Exception traceback:
+Traceback (most recent call last):
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/__init__.py", line 1234, in __threaded_polling
+    polling_thread.raise_exceptions()
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/util.py", line 111, in raise_exceptions
+    raise self.exception_info
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/util.py", line 93, in run
+    task(*args, **kwargs)
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/__init__.py", line 688, in __retrieve_updates
+    updates = self.get_updates(offset=(self.last_update_id + 1),
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/__init__.py", line 660, in get_updates
+    json_updates = apihelper.get_updates(
+                   ^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/apihelper.py", line 332, in get_updates
+    return _make_request(token, method_url, params=payload)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/apihelper.py", line 168, in _make_request
+    json_result = _check_result(method_name, result)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/apihelper.py", line 195, in _check_result
+    raise ApiTelegramException(method_name, result, result_json)
+telebot.apihelper.ApiTelegramException: A request to the Telegram API was unsuccessful. Error code: 409. Description: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+
+2025-04-18 13:50:09,718 - Threaded polling exception: A request to the Telegram API was unsuccessful. Error code: 409. Description: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2025-04-18 13:50:09,719 - Exception traceback:
+Traceback (most recent call last):
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/__init__.py", line 1234, in __threaded_polling
+    polling_thread.raise_exceptions()
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/util.py", line 111, in raise_exceptions
+    raise self.exception_info
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/util.py", line 93, in run
+    task(*args, **kwargs)
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/__init__.py", line 688, in __retrieve_updates
+    updates = self.get_updates(offset=(self.last_update_id + 1),
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/__init__.py", line 660, in get_updates
+    json_updates = apihelper.get_updates(
+                   ^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/apihelper.py", line 332, in get_updates
+    return _make_request(token, method_url, params=payload)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/apihelper.py", line 168, in _make_request
+    json_result = _check_result(method_name, result)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/apihelper.py", line 195, in _check_result
+    raise ApiTelegramException(method_name, result, result_json)
+telebot.apihelper.ApiTelegramException: A request to the Telegram API was unsuccessful. Error code: 409. Description: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+
+2025-04-18 13:50:11,953 - Threaded polling exception: A request to the Telegram API was unsuccessful. Error code: 409. Description: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2025-04-18 13:50:11,957 - Exception traceback:
+Traceback (most recent call last):
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/__init__.py", line 1234, in __threaded_polling
+    polling_thread.raise_exceptions()
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/util.py", line 111, in raise_exceptions
+    raise self.exception_info
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/util.py", line 93, in run
+    task(*args, **kwargs)
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/__init__.py", line 688, in __retrieve_updates
+    updates = self.get_updates(offset=(self.last_update_id + 1),
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/__init__.py", line 660, in get_updates
+    json_updates = apihelper.get_updates(
+                   ^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/apihelper.py", line 332, in get_updates
+    return _make_request(token, method_url, params=payload)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/apihelper.py", line 168, in _make_request
+    json_result = _check_result(method_name, result)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/apihelper.py", line 195, in _check_result
+    raise ApiTelegramException(method_name, result, result_json)
+telebot.apihelper.ApiTelegramException: A request to the Telegram API was unsuccessful. Error code: 409. Description: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+
+2025-04-18 13:50:13,062 - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-18 13:50:13,711 - Erro do Telegram para chat_id 6809356347: A request to the Telegram API was unsuccessful. Error code: 400. Description: Bad Request: can't parse entities: Can't find end of the entity starting at byte offset 2943
+2025-04-18 13:50:13,933 - Erro do Telegram para chat_id 6481496106: A request to the Telegram API was unsuccessful. Error code: 400. Description: Bad Request: can't parse entities: Can't find end of the entity starting at byte offset 2943
+2025-04-18 13:50:14,163 - Erro do Telegram para chat_id -1002254474701: A request to the Telegram API was unsuccessful. Error code: 400. Description: Bad Request: can't parse entities: Can't find end of the entity starting at byte offset 2943
+2025-04-18 13:50:14,164 - Job "Enviar mensagem diária (trigger: cron[hour='13', minute='50'], next run at: 2025-04-19 13:50:00 -03)" executed successfully
+2025-04-18 13:50:16,198 - Threaded polling exception: A request to the Telegram API was unsuccessful. Error code: 409. Description: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2025-04-18 13:50:16,210 - Exception traceback:
+Traceback (most recent call last):
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/__init__.py", line 1234, in __threaded_polling
+    polling_thread.raise_exceptions()
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/util.py", line 111, in raise_exceptions
+    raise self.exception_info
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/util.py", line 93, in run
+    task(*args, **kwargs)
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/__init__.py", line 688, in __retrieve_updates
+    updates = self.get_updates(offset=(self.last_update_id + 1),
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/__init__.py", line 660, in get_updates
+    json_updates = apihelper.get_updates(
+                   ^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/apihelper.py", line 332, in get_updates
+    return _make_request(token, method_url, params=payload)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/apihelper.py", line 168, in _make_request
+    json_result = _check_result(method_name, result)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/apihelper.py", line 195, in _check_result
+    raise ApiTelegramException(method_name, result, result_json)
+telebot.apihelper.ApiTelegramException: A request to the Telegram API was unsuccessful. Error code: 409. Description: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+
+2025-04-18 13:50:20,475 - Threaded polling exception: A request to the Telegram API was unsuccessful. Error code: 409. Description: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2025-04-18 13:50:20,476 - Exception traceback:
+Traceback (most recent call last):
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/__init__.py", line 1234, in __threaded_polling
+    polling_thread.raise_exceptions()
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/util.py", line 111, in raise_exceptions
+    raise self.exception_info
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/util.py", line 93, in run
+    task(*args, **kwargs)
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/__init__.py", line 688, in __retrieve_updates
+    updates = self.get_updates(offset=(self.last_update_id + 1),
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/__init__.py", line 660, in get_updates
+    json_updates = apihelper.get_updates(
+                   ^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/apihelper.py", line 332, in get_updates
+    return _make_request(token, method_url, params=payload)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/apihelper.py", line 168, in _make_request
+    json_result = _check_result(method_name, result)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/apihelper.py", line 195, in _check_result
+    raise ApiTelegramException(method_name, result, result_json)
+telebot.apihelper.ApiTelegramException: A request to the Telegram API was unsuccessful. Error code: 409. Description: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+
+2025-04-18 13:50:28,720 - Threaded polling exception: A request to the Telegram API was unsuccessful. Error code: 409. Description: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2025-04-18 13:50:28,723 - Exception traceback:
+Traceback (most recent call last):
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/__init__.py", line 1234, in __threaded_polling
+    polling_thread.raise_exceptions()
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/util.py", line 111, in raise_exceptions
+    raise self.exception_info
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/util.py", line 93, in run
+    task(*args, **kwargs)
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/__init__.py", line 688, in __retrieve_updates
+    updates = self.get_updates(offset=(self.last_update_id + 1),
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/__init__.py", line 660, in get_updates
+    json_updates = apihelper.get_updates(
+                   ^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/apihelper.py", line 332, in get_updates
+    return _make_request(token, method_url, params=payload)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/apihelper.py", line 168, in _make_request
+    json_result = _check_result(method_name, result)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/apihelper.py", line 195, in _check_result
+    raise ApiTelegramException(method_name, result, result_json)
+telebot.apihelper.ApiTelegramException: A request to the Telegram API was unsuccessful. Error code: 409. Description: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+
+2025-04-18 13:50:36,948 - Threaded polling exception: A request to the Telegram API was unsuccessful. Error code: 409. Description: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+2025-04-18 13:50:36,948 - Exception traceback:
+Traceback (most recent call last):
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/__init__.py", line 1234, in __threaded_polling
+    polling_thread.raise_exceptions()
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/util.py", line 111, in raise_exceptions
+    raise self.exception_info
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/util.py", line 93, in run
+    task(*args, **kwargs)
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/__init__.py", line 688, in __retrieve_updates
+    updates = self.get_updates(offset=(self.last_update_id + 1),
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/__init__.py", line 660, in get_updates
+    json_updates = apihelper.get_updates(
+                   ^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/apihelper.py", line 332, in get_updates
+    return _make_request(token, method_url, params=payload)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/apihelper.py", line 168, in _make_request
+    json_result = _check_result(method_name, result)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/anaconda3/lib/python3.12/site-packages/telebot/apihelper.py", line 195, in _check_result
+    raise ApiTelegramException(method_name, result, result_json)
+telebot.apihelper.ApiTelegramException: A request to the Telegram API was unsuccessful. Error code: 409. Description: Conflict: terminated by other getUpdates request; make sure that only one bot instance is running
+
+2025-04-18 13:50:48,126 - Iniciando bot...
+2025-04-18 13:50:48,804 - Bot conectado: BettingClubLittleEvils_bot
+2025-04-18 13:50:48,807 - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2025-04-18 13:50:48,808 - Added job "Enviar mensagem diária" to job store "default"
+2025-04-18 13:50:48,808 - Scheduler started
+2025-04-18 13:50:48,808 - Mensagem agendada para 13:51 (horário de São Paulo)
+2025-04-18 13:50:54,251 - Iniciando bot...
+2025-04-18 13:50:54,841 - Bot conectado: BettingClubLittleEvils_bot
+2025-04-18 13:50:54,848 - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2025-04-18 13:50:54,848 - Added job "Enviar mensagem diária" to job store "default"
+2025-04-18 13:50:54,848 - Scheduler started
+2025-04-18 13:50:54,849 - Mensagem agendada para 13:51 (horário de São Paulo)
+2025-04-18 13:51:00,012 - Running job "Enviar mensagem diária (trigger: cron[hour='13', minute='51'], next run at: 2025-04-18 13:51:00 -03)" (scheduled at 2025-04-18 13:51:00-03:00)
+2025-04-18 13:51:00,012 - Enviando mensagem agendada às 13:51:00
+2025-04-18 13:51:13,464 - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-18 13:51:14,949 - Arquivo CSV enviado com sucesso para o chat_id: 6809356347
+2025-04-18 13:51:14,949 - Mensagem enviada com sucesso para o chat_id: 6809356347
+2025-04-18 13:51:15,943 - Arquivo CSV enviado com sucesso para o chat_id: 6481496106
+2025-04-18 13:51:15,943 - Mensagem enviada com sucesso para o chat_id: 6481496106
+2025-04-18 13:51:17,111 - Arquivo CSV enviado com sucesso para o chat_id: -1002254474701
+2025-04-18 13:51:17,111 - Mensagem enviada com sucesso para o chat_id: -1002254474701
+2025-04-18 13:51:17,111 - Job "Enviar mensagem diária (trigger: cron[hour='13', minute='51'], next run at: 2025-04-19 13:51:00 -03)" executed successfully
+2025-04-18 13:52:21,988 - Scheduler has been shut down
+2025-04-18 13:52:21,989 - Bot encerrado
+2025-04-18 13:52:34,857 - Iniciando bot...
+2025-04-18 13:52:35,534 - Bot conectado: BettingClubLittleEvils_bot
+2025-04-18 13:52:35,537 - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2025-04-18 13:52:35,538 - Added job "Enviar mensagem diária" to job store "default"
+2025-04-18 13:52:35,538 - Scheduler started
+2025-04-18 13:52:35,538 - Mensagem agendada para 13:51 (horário de São Paulo)
+2025-04-18 13:53:23,789 - Scheduler has been shut down
+2025-04-18 13:53:23,789 - Bot encerrado
+2025-04-18 13:53:33,962 - Iniciando bot...
+2025-04-18 13:53:34,628 - Bot conectado: BettingClubLittleEvils_bot
+2025-04-18 13:53:34,631 - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2025-04-18 13:53:34,631 - Added job "Enviar mensagem diária" to job store "default"
+2025-04-18 13:53:34,631 - Scheduler started
+2025-04-18 13:53:34,632 - Mensagem agendada para 13:54 (horário de São Paulo)
+2025-04-18 13:54:00,007 - Running job "Enviar mensagem diária (trigger: cron[hour='13', minute='54'], next run at: 2025-04-18 13:54:00 -03)" (scheduled at 2025-04-18 13:54:00-03:00)
+2025-04-18 13:54:00,010 - Enviando mensagem agendada às 13:54:00
+2025-04-18 13:54:16,182 - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-18 13:54:16,892 - Erro do Telegram para chat_id 6809356347: A request to the Telegram API was unsuccessful. Error code: 400. Description: Bad Request: can't parse entities: Can't find end of the entity starting at byte offset 2660
+2025-04-18 13:54:17,130 - Erro do Telegram para chat_id 6481496106: A request to the Telegram API was unsuccessful. Error code: 400. Description: Bad Request: can't parse entities: Can't find end of the entity starting at byte offset 2660
+2025-04-18 13:54:17,366 - Erro do Telegram para chat_id -1002254474701: A request to the Telegram API was unsuccessful. Error code: 400. Description: Bad Request: can't parse entities: Can't find end of the entity starting at byte offset 2660
+2025-04-18 13:54:17,366 - Job "Enviar mensagem diária (trigger: cron[hour='13', minute='54'], next run at: 2025-04-19 13:54:00 -03)" executed successfully
+2025-04-18 14:20:19,477 - Scheduler has been shut down
+2025-04-18 14:20:19,480 - Bot encerrado
+2025-04-18 19:02:51,856 - Starting bot...
+2025-04-18 19:02:52,883 - Bot connected: BettingClubLittleEvils_bot
+2025-04-18 19:02:52,889 - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2025-04-18 19:02:52,889 - Added job "Send daily message" to job store "default"
+2025-04-18 19:02:52,889 - Scheduler started
+2025-04-18 19:02:52,890 - Message scheduled for 18:03 (New York time)
+2025-04-18 19:03:00,009 - Running job "Send daily message (trigger: cron[hour='18', minute='3'], next run at: 2025-04-18 18:03:00 EDT)" (scheduled at 2025-04-18 18:03:00-04:00)
+2025-04-18 19:03:00,010 - Sending scheduled message at 18:03:00
+2025-04-18 19:03:19,593 - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-18 19:03:21,109 - CSV file sent successfully to chat_id: 6809356347
+2025-04-18 19:03:21,109 - Message sent successfully to chat_id: 6809356347
+2025-04-18 19:03:22,076 - CSV file sent successfully to chat_id: 6481496106
+2025-04-18 19:03:22,077 - Message sent successfully to chat_id: 6481496106
+2025-04-18 19:03:22,930 - CSV file sent successfully to chat_id: -1002254474701
+2025-04-18 19:03:22,931 - Message sent successfully to chat_id: -1002254474701
+2025-04-18 19:03:22,931 - Job "Send daily message (trigger: cron[hour='18', minute='3'], next run at: 2025-04-19 18:03:00 EDT)" executed successfully
+2025-04-19 14:09:29,372 - Starting bot...
+2025-04-19 14:09:30,030 - Bot connected: BettingClubLittleEvils_bot
+2025-04-19 14:09:30,034 - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2025-04-19 14:09:30,034 - Added job "Send daily message" to job store "default"
+2025-04-19 14:09:30,034 - Scheduler started
+2025-04-19 14:09:30,035 - Message scheduled for 13:03 (New York time)
+2025-04-19 14:09:42,655 - Scheduler has been shut down
+2025-04-19 14:09:42,656 - Bot shutdown
+2025-04-19 14:09:58,279 - Starting bot...
+2025-04-19 14:09:58,953 - Bot connected: BettingClubLittleEvils_bot
+2025-04-19 14:09:58,963 - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2025-04-19 14:09:58,963 - Added job "Send daily message" to job store "default"
+2025-04-19 14:09:58,963 - Scheduler started
+2025-04-19 14:09:58,964 - Message scheduled for 13:10 (New York time)
+2025-04-19 14:10:00,004 - Running job "Send daily message (trigger: cron[hour='13', minute='10'], next run at: 2025-04-19 13:10:00 EDT)" (scheduled at 2025-04-19 13:10:00-04:00)
+2025-04-19 14:10:00,004 - Sending scheduled message at 13:10:00
+2025-04-19 14:10:27,646 - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+2025-04-19 14:10:28,456 - Telegram error for chat_id 6809356347: A request to the Telegram API was unsuccessful. Error code: 400. Description: Bad Request: message is too long
+2025-04-19 14:10:28,679 - Telegram error for chat_id 6481496106: A request to the Telegram API was unsuccessful. Error code: 400. Description: Bad Request: message is too long
+2025-04-19 14:10:28,948 - Telegram error for chat_id -1002254474701: A request to the Telegram API was unsuccessful. Error code: 400. Description: Bad Request: message is too long
+2025-04-19 14:10:28,949 - Job "Send daily message (trigger: cron[hour='13', minute='10'], next run at: 2025-04-20 13:10:00 EDT)" executed successfully
+2025-04-19 14:11:08,510 - Scheduler has been shut down
+2025-04-19 14:11:08,510 - Bot shutdown

@@ -150,7 +150,7 @@ def process_betting_data(model, pitchers_df, k_percentage_df, betting_data_path,
     betting_data = pd.read_csv(betting_data_path)
     
     # Initialize prediction columns with correct data types
-    betting_data['ML Strikeout Line'] = (betting_data['Over Line'] + betting_data['Under Line']) / 2
+    betting_data['ML Strikeout Line'] = betting_data['Line']
     betting_data['ML Predict Value'] = np.nan
     betting_data['ML Recommend Side'] = pd.Series(dtype='object')  # Use object type for string values
     betting_data['ML Confidence Percentage'] = np.nan
@@ -245,7 +245,7 @@ def get_top_picks(predictions_df, n=10, verbose=True):
     
     # Ensure required columns exist
     required_columns = ['Player', 'Team', 'ML Predict Value', 'ML Recommend Side', 
-                       'Over Line', 'ML Confidence Percentage', 'API Projected Value', 'Over Odds', 'Under Odds']
+                       'Line', 'ML Confidence Percentage', 'API Projected Value', 'Over Odds', 'Under Odds']
     
     missing_cols = [col for col in required_columns if col not in predictions_df.columns]
     if missing_cols:
@@ -266,7 +266,7 @@ def get_top_picks(predictions_df, n=10, verbose=True):
                                 f"Under Odds: {pick['Under Odds']:.1f} | "
                                 f"ML Pred: {pick['ML Predict Value']:.1f} | "
                                 f"API Proj: {pick['API Projected Value']:.1f} | "
-                                f"{pick['ML Recommend Side']} {pick['Over Line']} | "
+                                f"{pick['ML Recommend Side']} {pick['Line']} | "
                                 f"Confidence: {pick['ML Confidence Percentage']:.1f}%\n")
         print(formatted_output)
     
