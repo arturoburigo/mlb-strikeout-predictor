@@ -6,16 +6,16 @@ from pathlib import Path
 from apscheduler.schedulers.blocking import BlockingScheduler
 from apscheduler.triggers.cron import CronTrigger
 import pytz
-from scrapping.get_pitcher_lastseason import load_pitcher_data
+from scrapping.get_pitcher_data_lastseason import load_pitcher_data
 from scrapping.get_pitcher_lastgame import load_last_pitcher_game
-from model_training import train_model
-from predictions import process_betting_data
+from scrapping.model.model_training import train_model
+from scrapping.model.making_predictions import process_betting_data
 from feature_engineering import main as engineer_features
-from scrapping.betting_odds_today import main as get_betting_odds
+from scrapping.betting_pitcher_odds_today import main as get_betting_odds
 from data_utils import load_data
 from email_ml_predictions import send_prediction_email
 from email_ml_results import send_results_email
-from aws_upload import upload_game_results
+from utils.upload_results_to_s3_Bucket import upload_game_results
 from cleanup_files import cleanup_csv_files
 from telegramSender import main as run_telegram_bot
 import os

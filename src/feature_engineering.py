@@ -98,8 +98,8 @@ def main(pitchers_df, k_percentage_df):
     """
     try:
         # Define current and previous seasons
-        current_season = 2024
-        last_season = 2023
+        current_season = 2025
+        last_season = 2024
         
         # Get unique pitchers
         unique_pitchers = pitchers_df['Pitcher'].unique()

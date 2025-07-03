@@ -16,7 +16,7 @@ def collect_team_strikeout_data(start_year, end_year):
         pd.DataFrame: DataFrame containing team strikeout percentages
     """
     seasons = [str(season) for season in range(start_year, end_year + 1)]
-    teams = ['OAK', 'TOR', 'KCR', 'SFG', 'MIA', 'TBR', 'BOS', 'CLE', 'CHC', 'NYY',
+    teams = ['ATH', 'TOR', 'KCR', 'SFG', 'MIA', 'TBR', 'BOS', 'CLE', 'CHC', 'NYY',
              'CHW', 'LAA', 'BAL', 'TEX', 'CIN', 'SEA', 'COL', 'HOU', 'ATL', 'DET',
              'ARI', 'MIN', 'PIT', 'MIL', 'PHI', 'LAD', 'SDP', 'NYM', 'WSN', 'STL']
 
@@ -24,7 +24,7 @@ def collect_team_strikeout_data(start_year, end_year):
 
     for season in seasons:
         for team in teams:
-            url = f"https://www.baseball-reference.com/teams/{team}/{season}.shtml#all_players_standard_batting"
+            url = f"https://www.baseball-reference.com/teams/{team}/{season}.shtml"
             print(f"Collecting data from: {url}")
             bt_df = pd.read_html(url, header=0, attrs={'id': 'players_standard_batting'})[0]
             bt_df.insert(loc=0, column='Season', value=season)
@@ -74,7 +74,7 @@ def collect_team_strikeout_data(start_year, end_year):
     return results_df
 
 if __name__ == "__main__":
-    results = collect_team_strikeout_data(2023, 2024)
+    results = collect_team_strikeout_data(2025, 2025)
     print(results)
 
 

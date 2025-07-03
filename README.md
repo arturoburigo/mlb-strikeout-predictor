@@ -32,6 +32,8 @@ The project consists of three main components:
 
 ### Data Collection
 - Automatic collection of strikeout odds from BettingPros API
+- Web scraping of Betano odds data with Selenium
+- Automatic merging of scraped data with existing betting data
 - Processing of historical pitcher data
 - Integration with team strikeout statistics
 
@@ -55,18 +57,67 @@ The project consists of three main components:
 
 ## Requirements
 
-- Python 3.x
-- Main libraries:
-  - pandas
-  - numpy
-  - scikit-learn
-  - requests
+- Python 3.12+
+- Poetry (for dependency management)
+
+## Installation
+
+1. **Install Poetry** (if not already installed):
+```bash
+curl -sSL https://install.python-poetry.org | python3 -
+```
+
+2. **Clone the repository and install dependencies**:
+```bash
+git clone <repository-url>
+cd pitcher_so_ML
+poetry install
+```
+
+3. **Activate the virtual environment**:
+```bash
+poetry shell
+```
+
+## Dependencies
+
+The project uses Poetry for dependency management. Main libraries include:
+- pandas
+- numpy
+- scikit-learn
+- selenium
+- webdriver-manager
+- requests
+- beautifulsoup4
+- matplotlib
+- seaborn
+- python-dotenv
+- xgboost
+- lightgbm
+- python-telegram-bot
+- APScheduler
+- telebot
 
 ## How to Use
 
 1. **Data Collection**
-```python
-python web_scrapping/request_SO_odds.py
+```bash
+# Using Poetry
+poetry run python src/scrapping/scrapper_betano_pitchers_odds.py
+
+# Or activate the environment first
+poetry shell
+python src/scrapping/scrapper_betano_pitchers_odds.py
+```
+
+**Available options:**
+- `--no-headless`: Run browser in visible mode (for debugging)
+- `--no-merge`: Skip merging with betting data
+- `--save-debug-csv`: Save scraped data to CSV for debugging
+
+2. **Test merging functionality**:
+```bash
+poetry run python test_merge.py
 ```
 
 2. **Model Training**

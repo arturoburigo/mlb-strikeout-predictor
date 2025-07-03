@@ -6,7 +6,7 @@ from email.message import EmailMessage
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from dotenv import load_dotenv
-from predictions import get_top_picks
+from scrapping.model.making_predictions import get_top_picks
 import pandas as pd
 
 load_dotenv()
