@@ -8,7 +8,7 @@ from apscheduler.triggers.cron import CronTrigger
 import pytz
 from scrapping.get_pitcher_data_lastseason import load_pitcher_data
 from scrapping.get_pitcher_lastgame import load_last_pitcher_game
-from scrapping.model.model_training import train_model
+from model.model_training import train_model
 from scrapping.model.making_predictions import process_betting_data
 from feature_engineering import main as engineer_features
 from scrapping.betting_pitcher_odds_today import main as get_betting_odds

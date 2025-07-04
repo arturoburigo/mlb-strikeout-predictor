@@ -27,6 +27,8 @@ pytz = "2021.1"
 telebot = "*"
 selenium = "^4.0.0"
 webdriver-manager = "^4.0.0"
+jupyter = "^1.1.1"
+jupyterlab = "^4.4.4"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.0.0"

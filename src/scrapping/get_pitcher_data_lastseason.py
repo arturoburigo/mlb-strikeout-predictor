@@ -17,7 +17,7 @@ def get_pitcher_last_season():
     print(f"Using the most recent betting data: {betting_file}")
     betting_data_df = pd.read_csv(betting_file)
     
-    seasons = [str(season) for season in range(2024, 2025)]
+    seasons = [str(season) for season in range(2023, 2026)]
     print(f'number of seasons={len(seasons)}')
 
     pitchers = betting_data_df['Name_abbreviation'].tolist()
