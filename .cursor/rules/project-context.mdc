@@ -1,0 +1,19 @@
+# ML Project Rules - Pitcher Strikeout Prediction
+
+## Project Purpose
+This is a **ML system for predicting pitcher strikeouts (SO)** in baseball games. The system:
+- Scrapes pitcher data and betting odds
+- Trains ML models (RandomForest, XGBoost, LightGBM, GradientBoosting)
+
+## Code Style & Structure
+- Use snake_case for function and variable names
+- Use descriptive names for ML models and data processing functions
+- Keep functions focused and single-purpose
+- Add type hints where possible
+- Use f-strings for string formatting
+
+## Data Processing
+- Always handle missing data explicitly
+- Use pandas for data manipulation
+- Validate data before model training
+- Save intermediate results to avoid recomputation

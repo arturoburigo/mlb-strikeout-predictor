@@ -6,18 +6,18 @@ from pathlib import Path
 from apscheduler.schedulers.blocking import BlockingScheduler
 from apscheduler.triggers.cron import CronTrigger
 import pytz
-from scrapping.get_pitcher_lastseason import load_pitcher_data
+from scrapping.get_pitcher_data_lastseason import load_pitcher_data
 from scrapping.get_pitcher_lastgame import load_last_pitcher_game
-from model_training import train_model
-from predictions import process_betting_data
+from model.model_training import train_model
+from scrapping.model.making_predictions import process_betting_data
 from feature_engineering import main as engineer_features
-from scrapping.betting_odds_today import main as get_betting_odds
+from scrapping.betting_pitcher_odds_today import main as get_betting_odds
 from data_utils import load_data
 from email_ml_predictions import send_prediction_email
 from email_ml_results import send_results_email
-from aws_upload import upload_game_results
+from utils.upload_results_to_s3_Bucket import upload_game_results
 from cleanup_files import cleanup_csv_files
-# from telegram_ml_predictions import send_predictions_to_telegram
+from telegramSender import main as run_telegram_bot
 import os
 from dotenv import load_dotenv
 import pandas as pd
@@ -47,8 +47,8 @@ AWS_UPLOAD_HOUR = int(os.getenv('AWS_UPLOAD_HOUR', 12))
 AWS_UPLOAD_MINUTE = int(os.getenv('AWS_UPLOAD_MINUTE', 0))
 CLEANUP_HOUR = int(os.getenv('CLEANUP_HOUR', 13))
 CLEANUP_MINUTE = int(os.getenv('CLEANUP_MINUTE', 0))
-# TELEGRAM_HOUR = int(os.getenv('TELEGRAM_HOUR', 22))
-# TELEGRAM_MINUTE = int(os.getenv('TELEGRAM_MINUTE', 45))
+TELEGRAM_HOUR = int(os.getenv('TELEGRAM_HOUR', 22))
+TELEGRAM_MINUTE = int(os.getenv('TELEGRAM_MINUTE', 45))
 
 # Debug logging for environment variables
 logger.info("=== Environment Variables Debug ===")
@@ -62,15 +62,15 @@ logger.info(f"AWS_UPLOAD_HOUR from env: {os.getenv('AWS_UPLOAD_HOUR')}")
 logger.info(f"AWS_UPLOAD_MINUTE from env: {os.getenv('AWS_UPLOAD_MINUTE')}")
 logger.info(f"CLEANUP_HOUR from env: {os.getenv('CLEANUP_HOUR')}")
 logger.info(f"CLEANUP_MINUTE from env: {os.getenv('CLEANUP_MINUTE')}")
-# logger.info(f"TELEGRAM_HOUR from env: {os.getenv('TELEGRAM_HOUR')}")
-# logger.info(f"TELEGRAM_MINUTE from env: {os.getenv('TELEGRAM_MINUTE')}")
+logger.info(f"TELEGRAM_HOUR from env: {os.getenv('TELEGRAM_HOUR')}")
+logger.info(f"TELEGRAM_MINUTE from env: {os.getenv('TELEGRAM_MINUTE')}")
 logger.info(f"Final values:")
 logger.info(f"DATA_PIPELINE: {DATA_PIPELINE_HOUR:02d}:{DATA_PIPELINE_MINUTE:02d}")
 logger.info(f"EMAIL: {EMAIL_HOUR:02d}:{EMAIL_MINUTE:02d}")
 logger.info(f"RESULTS_EMAIL: {RESULTS_EMAIL_HOUR:02d}:{RESULTS_EMAIL_MINUTE:02d}")
 logger.info(f"AWS_UPLOAD: {AWS_UPLOAD_HOUR:02d}:{AWS_UPLOAD_MINUTE:02d}")
 logger.info(f"CLEANUP: {CLEANUP_HOUR:02d}:{CLEANUP_MINUTE:02d}")
-# logger.info(f"TELEGRAM: {TELEGRAM_HOUR:02d}:{TELEGRAM_MINUTE:02d}")
+logger.info(f"TELEGRAM: {TELEGRAM_HOUR:02d}:{TELEGRAM_MINUTE:02d}")
 
 # Suppress warnings
 warnings.filterwarnings('ignore')
@@ -247,41 +247,16 @@ def run_cleanup():
         logger.error(f"Cleanup failed with error: {str(e)}", exc_info=True)
         return False
 
-# def run_telegram_pipeline():
-#     """
-#     Send MLB predictions to Telegram group
-#     """
-#     try:
-#         logger.info("=== Running Telegram notification pipeline ===")
-#         
-#         # Get today's date and construct the filename
-#         today_date = datetime.now().strftime("%Y-%m-%d")
-#         csv_filename = f"predicted_{today_date}.csv"
-#         
-#         # Check if today's file exists, otherwise use the most recent one
-#         if not os.path.exists(csv_filename):
-#             logger.info(f"Today's prediction file not found, looking for most recent...")
-#             prediction_files = glob.glob("predicted_*.csv")
-#             
-#             if prediction_files:
-#                 prediction_files.sort(reverse=True)
-#                 csv_filename = prediction_files[0]
-#                 logger.info(f"Using most recent file: {csv_filename}")
-#             else:
-#                 logger.error("Error: No prediction files found")
-#                 return
-#         
-#         # Load predictions and send to Telegram
-#         predictions_df = pd.read_csv(csv_filename)
-#         send_predictions_to_telegram(
-#             predictions_df=predictions_df,
-#             csv_path=csv_filename
-#         )
-#         
-#         logger.info("=== Telegram notification pipeline completed successfully ===")
-#         
-#     except Exception as e:
-#         logger.error(f"Error in Telegram notification pipeline: {str(e)}")
+def run_telegram_pipeline():
+    """
+    Run the Telegram bot to send MLB predictions
+    """
+    try:
+        logger.info("=== Running Telegram notification pipeline ===")
+        run_telegram_bot()
+        logger.info("=== Telegram notification pipeline completed successfully ===")
+    except Exception as e:
+        logger.error(f"Error in Telegram notification pipeline: {str(e)}")
 
 def schedule_pipeline():
     """
@@ -337,21 +312,21 @@ def schedule_pipeline():
         replace_existing=True
     )
     
-    # # Telegram notification
-    # scheduler.add_job(
-    #     run_telegram_pipeline,
-    #     trigger=CronTrigger(hour=TELEGRAM_HOUR, minute=TELEGRAM_MINUTE, timezone=et_timezone),
-    #     id='daily_telegram_pipeline',
-    #     name=f'Send Telegram notification daily at {TELEGRAM_HOUR:02d}:{TELEGRAM_MINUTE:02d} ET',
-    #     replace_existing=True
-    # )
+    # Telegram notification
+    scheduler.add_job(
+        run_telegram_pipeline,
+        trigger=CronTrigger(hour=TELEGRAM_HOUR, minute=TELEGRAM_MINUTE, timezone=et_timezone),
+        id='daily_telegram_pipeline',
+        name=f'Send Telegram notification daily at {TELEGRAM_HOUR:02d}:{TELEGRAM_MINUTE:02d} ET',
+        replace_existing=True
+    )
     
     logger.info(f"Pipeline scheduled to run daily at {DATA_PIPELINE_HOUR:02d}:{DATA_PIPELINE_MINUTE:02d} ET")
     logger.info(f"Predictions email will be sent at {EMAIL_HOUR:02d}:{EMAIL_MINUTE:02d} ET")
     logger.info(f"Results pipeline will run at {RESULTS_EMAIL_HOUR:02d}:{RESULTS_EMAIL_MINUTE:02d} ET")
     logger.info(f"AWS upload will run at {AWS_UPLOAD_HOUR:02d}:{AWS_UPLOAD_MINUTE:02d} ET")
     logger.info(f"Cleanup will run at {CLEANUP_HOUR:02d}:{CLEANUP_MINUTE:02d} ET")
-    # logger.info(f"Telegram notification will be sent at {TELEGRAM_HOUR:02d}:{TELEGRAM_MINUTE:02d} ET")
+    logger.info(f"Telegram notification will be sent at {TELEGRAM_HOUR:02d}:{TELEGRAM_MINUTE:02d} ET")
     scheduler.start()
 
 def get_next_run_time(current_time, target_hour, target_minute):
@@ -380,7 +355,7 @@ if __name__ == "__main__":
     next_results_email = get_next_run_time(current_time, RESULTS_EMAIL_HOUR, RESULTS_EMAIL_MINUTE)
     next_aws_upload = get_next_run_time(current_time, AWS_UPLOAD_HOUR, AWS_UPLOAD_MINUTE)
     next_cleanup = get_next_run_time(current_time, CLEANUP_HOUR, CLEANUP_MINUTE)
-    # next_telegram = get_next_run_time(current_time, TELEGRAM_HOUR, TELEGRAM_MINUTE)
+    next_telegram = get_next_run_time(current_time, TELEGRAM_HOUR, TELEGRAM_MINUTE)
     
     # Calculate wait times
     wait_seconds_data = (next_data_pipeline - current_time).total_seconds()
@@ -398,8 +373,8 @@ if __name__ == "__main__":
     wait_seconds_cleanup = (next_cleanup - current_time).total_seconds()
     wait_hours_cleanup = wait_seconds_cleanup / 3600
     
-    # wait_seconds_telegram = (next_telegram - current_time).total_seconds()
-    # wait_hours_telegram = wait_seconds_telegram / 3600
+    wait_seconds_telegram = (next_telegram - current_time).total_seconds()
+    wait_hours_telegram = wait_seconds_telegram / 3600
     
     logger.info(f"Waiting until {next_data_pipeline.strftime('%Y-%m-%d %H:%M')} ET to start the pipeline...")
     logger.info(f"Approximately {wait_hours_data:.1f} hours until next pipeline run")
@@ -411,8 +386,8 @@ if __name__ == "__main__":
     logger.info(f"Approximately {wait_hours_aws:.1f} hours until next AWS upload")
     logger.info(f"Cleanup will run at {next_cleanup.strftime('%Y-%m-%d %H:%M')} ET")
     logger.info(f"Approximately {wait_hours_cleanup:.1f} hours until next cleanup")
-    # logger.info(f"Telegram notification will be sent at {next_telegram.strftime('%Y-%m-%d %H:%M')} ET")
-    # logger.info(f"Approximately {wait_hours_telegram:.1f} hours until next telegram notification")
+    logger.info(f"Telegram notification will be sent at {next_telegram.strftime('%Y-%m-%d %H:%M')} ET")
+    logger.info(f"Approximately {wait_hours_telegram:.1f} hours until next telegram notification")
     
     # Start the scheduler which will wait until the scheduled time
     schedule_pipeline()

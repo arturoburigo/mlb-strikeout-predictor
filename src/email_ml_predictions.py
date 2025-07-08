@@ -6,7 +6,7 @@ from email.message import EmailMessage
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from dotenv import load_dotenv
-from predictions import get_top_picks
+from scrapping.model.making_predictions import get_top_picks
 import pandas as pd
 
 load_dotenv()
@@ -79,103 +79,7 @@ def create_email_content(predictions_df=None, csv_path=None):
     return subject, html_body, text_body
 
 
-def send_prediction_email(receiver_email, predictions_df=None, csv_path=None, cc_emails=None):
-    """
-    Send prediction email with top picks and CSV attachment, with optional CC recipients.
-    
-    Args:
-        receiver_email (str): Email address to send to
-        predictions_df (pd.DataFrame): Predictions DataFrame (optional)
-        csv_path (str): Path to predictions CSV (required if no df provided)
-        cc_emails (list): List of email addresses to CC (optional)
-        
-    Returns:
-        bool: True if email sent successfully
-    """
-    sender_email = os.getenv("EMAIL_SENDER")
-    sender_password = os.getenv("EMAIL_PASSWORD")
-    sender_name = "MLB PREDICT"
-    
-    print(f"Sender Email: {sender_email}")
-    print(f"Receiver Email: {receiver_email}")
-    if cc_emails:
-        print(f"CC Emails: {', '.join(cc_emails)}")
-    
-    if not sender_email or not sender_password:
-        print("Error: Email credentials not configured in environment variables")
-        print(f"Sender email: {'set' if sender_email else 'not set'}")
-        print(f"Sender password: {'set' if sender_password else 'not set'}")
-        return False
-    
-    if predictions_df is None and csv_path is None:
-        print("Error: Must provide either predictions_df or csv_path")
-        return False
-    
-    try:
-        # Create email content
-        subject, html_body, text_body = create_email_content(predictions_df, csv_path)
-        
-        # Create multipart message
-        msg = MIMEMultipart("alternative")
-        msg["From"] = sender_name
-        msg["To"] = receiver_email
-        msg["Subject"] = subject
-        
-        # Add CC recipients if provided
-        if cc_emails:
-            msg["Cc"] = ", ".join(cc_emails)  # Join multiple emails with comma
-        
-        # Attach both HTML and plain text versions
-        msg.attach(MIMEText(text_body, "plain"))
-        msg.attach(MIMEText(html_body, "html"))
-        
-        # Attach CSV file if path provided
-        if csv_path:
-            try:
-                with open(csv_path, "rb") as f:
-                    part = MIMEText(f.read().decode("utf-8"), "csv")
-                    part.add_header(
-                        "Content-Disposition",
-                        f"attachment; filename={os.path.basename(csv_path)}",
-                    )
-                    msg.attach(part)
-            except Exception as e:
-                print(f"Warning: Could not attach CSV file - {str(e)}")
-        
-        # Debug print before sending
-        print(f"Attempting to send email from {sender_email} to {receiver_email}")
-        if cc_emails:
-            print(f"CC: {', '.join(cc_emails)}")
-        print(f"Subject: {subject}")
-        print(f"Attachment: {csv_path if csv_path else 'None'}")
-        
-        # Send email
-        with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
-            server.login(sender_email, sender_password)
-            
-            # Combine To and CC recipients for the actual send
-            all_recipients = [receiver_email]
-            if cc_emails:
-                all_recipients.extend(cc_emails)
-            
-            server.send_message(msg, to_addrs=all_recipients)
-        
-        print(f"Successfully sent predictions to {receiver_email}")
-        if cc_emails:
-            print(f"CC'd: {', '.join(cc_emails)}")
-        return True
-        
-    except smtplib.SMTPAuthenticationError:
-        print("Error: Authentication failed. Please check your email credentials.")
-        print("Note: You might need to use an 'App Password' if you have 2FA enabled.")
-        return False
-    except smtplib.SMTPException as e:
-        print(f"SMTP Error: {str(e)}")
-        return False
-    except Exception as e:
-        print(f"Unexpected error: {str(e)}")
-        return False
-    
+
 def send_prediction_email(receiver_email=None, predictions_df=None, csv_path=None, cc_emails=None):
     """
     Send prediction email with top picks and CSV attachment, with optional CC recipients.

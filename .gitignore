@@ -8,3 +8,4 @@ __pycache__/
 *.so
 *.csv
 !team_strikeout_percentage.csv
+pitcher_data.csv

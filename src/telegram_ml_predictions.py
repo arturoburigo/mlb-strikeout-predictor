@@ -4,7 +4,7 @@ import pandas as pd
 from datetime import datetime
 import glob
 from dotenv import load_dotenv
-from predictions import get_top_picks
+from scrapping.model.making_predictions import get_top_picks
 
 load_dotenv()
 
