@@ -92,6 +92,7 @@ def get_pitcher_last_season():
         # Colunas a manter, incluindo a coluna Season
 
         columns_to_keep = [
+            'Date',     # Data do jogo
             'Season',   # Temporada
             'Pitcher',  # Nome do pitcher
             'Home',     # Se o jogo é em casa (1) ou fora (0)

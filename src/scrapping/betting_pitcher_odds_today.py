@@ -14,6 +14,7 @@ logger = logging.getLogger(__name__)
 
 class BettingDataScraper:
     BASE_URL = "https://api.bettingpros.com/v3"
+    MLB_API_URL = "https://statsapi.mlb.com/api/v1/schedule"
     HEADERS = {
         "Origin": "https://www.bettingpros.com",
         "x-api-key": os.getenv("BETTINGPROS_API_KEY"),
@@ -44,6 +45,7 @@ class BettingDataScraper:
         "HOU": "HOU",  # Houston Astros
         "LAA": "LAA",  # Los Angeles Angels
         "OAK": "OAK",  # Oakland Athletics
+        "ATH": "OAK",  # Oakland Athletics
         "SEA": "SEA",  # Seattle Mariners
         "TEX": "TEX",  # Texas Rangers
         "ATL": "ATL",  # Atlanta Braves
@@ -62,9 +64,45 @@ class BettingDataScraper:
         "SFG": "SFG",  # San Francisco Giants
     }
 
+    # Full team name to abbreviation mapping for MLB API
+    FULL_TEAM_NAMES = {
+        "Kansas City Royals": "KCR",
+        "San Diego Padres": "SDP", 
+        "Tampa Bay Rays": "TBR",
+        "Washington Nationals": "WSN",
+        "Chicago White Sox": "CHW",
+        "San Francisco Giants": "SFG",
+        "New York Mets": "NYM",
+        "New York Yankees": "NYY",
+        "Boston Red Sox": "BOS",
+        "Toronto Blue Jays": "TOR",
+        "Baltimore Orioles": "BAL",
+        "Cleveland Guardians": "CLE",
+        "Detroit Tigers": "DET",
+        "Minnesota Twins": "MIN",
+        "Houston Astros": "HOU",
+        "Los Angeles Angels": "LAA",
+        "Oakland Athletics": "OAK",
+        "Athletics": "OAK",
+        "Seattle Mariners": "SEA",
+        "Texas Rangers": "TEX",
+        "Atlanta Braves": "ATL",
+        "Miami Marlins": "MIA",
+        "Philadelphia Phillies": "PHI",
+        "Chicago Cubs": "CHC",
+        "Cincinnati Reds": "CIN",
+        "Milwaukee Brewers": "MIL",
+        "Pittsburgh Pirates": "PIT",
+        "St. Louis Cardinals": "STL",
+        "Arizona Diamondbacks": "ARI",
+        "Colorado Rockies": "COL",
+        "Los Angeles Dodgers": "LAD",
+    }
+
     def __init__(self):
         self.matchups = {}
         self.events = {}
+        self.mlb_schedule = {}
 
     @staticmethod
     def convert_odds_to_decimal(american_odds: Optional[int]) -> Optional[float]:
@@ -102,6 +140,50 @@ class BettingDataScraper:
         except Exception:
             return datetime.now().strftime("%Y-%m-%d")
 
+    def fetch_mlb_schedule(self, date: str) -> Dict:
+        """Fetch MLB schedule data for a given date"""
+        formatted_date = self.parse_date(date)
+        
+        # Build the URL with all parameters as they appear in the original URL
+        url = f"{self.MLB_API_URL}?sportId=1&sportId=21&sportId=51&startDate={formatted_date}&endDate={formatted_date}&timeZone=America/New_York&gameType=E&&gameType=S&&gameType=R&&gameType=F&&gameType=D&&gameType=L&&gameType=W&&gameType=A&&gameType=C&language=en&leagueId=&&leagueId=&&leagueId=103&&leagueId=104&&leagueId=590&&leagueId=160&&leagueId=159&&leagueId=420&&leagueId=428&&leagueId=431&&leagueId=426&&leagueId=427&&leagueId=429&&leagueId=430&&leagueId=432&hydrate=team,linescore(matchup,runners),xrefId,story,flags,statusFlags,broadcasts(all),venue(location),decisions,person,probablePitcher,stats,game(content(media(epg),summary),tickets),seriesStatus(useOverride=true)&sortBy=gameDate,gameStatus,gameType"
+
+        response = requests.get(url)
+        if response.status_code != 200:
+            raise Exception(f"Failed to fetch MLB schedule: {response.status_code}")
+
+        data = response.json()
+        games = data.get('dates', [{}])[0].get('games', [])
+        
+        # Process games and store matchup information
+        for game in games:
+            teams = game.get('teams', {})
+            away_team = teams.get('away', {})
+            home_team = teams.get('home', {})
+            
+            away_team_name = away_team.get('team', {}).get('name', '')
+            home_team_name = home_team.get('team', {}).get('name', '')
+            
+            # Convert full names to abbreviations
+            away_abbr = self.FULL_TEAM_NAMES.get(away_team_name, away_team_name)
+            home_abbr = self.FULL_TEAM_NAMES.get(home_team_name, home_team_name)
+            
+            # Store matchup info with home/away designation
+            self.mlb_schedule[away_abbr] = {
+                'opponent': home_abbr,
+                'home': 0,  # Away team
+                'away_team': away_abbr,
+                'home_team': home_abbr
+            }
+            
+            self.mlb_schedule[home_abbr] = {
+                'opponent': away_abbr,
+                'home': 1,  # Home team
+                'away_team': away_abbr,
+                'home_team': home_abbr
+            }
+        
+        return self.mlb_schedule
+
     def get_events(self, date: str, sport: str = "MLB") -> List[str]:
         """Fetch all event IDs for a given date and sport"""
         url = f"{self.BASE_URL}/events"
@@ -133,46 +215,6 @@ class BettingDataScraper:
         
         return [str(event['id']) for event in events]
 
-    def fetch_matchups(self, event_ids: List[str]) -> None:
-        """Fetch and store matchup information"""
-        url = f"{self.BASE_URL}/offers"
-        params = {
-            "sport": "MLB",
-            "market_id": "285",
-            "event_id": ":".join(event_ids),
-            "location": "INT",
-            "limit": 5,
-            "page": 1
-        }
-
-        response = requests.get(url, headers=self.HEADERS, params=params)
-        if response.status_code != 200:
-            raise Exception(f"Failed to fetch offers: {response.status_code}")
-
-        data = response.json()
-        self._process_matchups(data.get('offers', []))
-
-    def _process_matchups(self, offers: List[Dict]) -> None:
-        """Process and store matchup information"""
-        for offer in offers:
-            event_id = str(offer.get('event_id'))
-            if event_id in self.events:
-                event_info = self.events[event_id]
-                team1 = event_info['team1']
-                team2 = event_info['team2']
-                
-                self.matchups[team1] = {
-                    'opponent': team2,
-                    'home': team2,
-                    'away': team1
-                }
-                self.matchups[team2] = {
-                    'opponent': team1,
-                    'home': team2,
-                    'away': team1
-                }
-                logger.info(f"Processed matchup: {team1} vs {team2}")
-
     def fetch_props(self, date: str) -> List[Dict]:
         """Fetch props data"""
         url = f"{self.BASE_URL}/props"
@@ -196,19 +238,12 @@ class BettingDataScraper:
 
         return response.json().get('props', [])
 
-    def create_player_abbreviation(self, player_name: str) -> str:
-        """Create abbreviated name for a player"""
-        name_parts = player_name.lower().split()
-        if len(name_parts) > 1:
-            return f"{name_parts[1][:5]}{name_parts[0][:2]}"
-        return f"{player_name[:5]}{player_name[:2]}"
-
     def save_to_csv(self, props: List[Dict], output_file: str = 'betting_data.csv') -> None:
         """Save props data to CSV file"""
         with open(output_file, 'w', newline='') as csvfile:
             csv_writer = csv.writer(csvfile)
             csv_writer.writerow([
-                'Player', 'Name_abbreviation', 'Team', 'Opponent', 'Home Team', 'Away Team',
+                'Player', 'Team', 'Opponent', 'Home',
                 'Over Line', 'Over Odds', 'Under Line', 'Under Odds', 'API Projected Value',
                 'API Recommended Side', 'Streak', 'Streak Type', 'Diff'
             ])
@@ -221,15 +256,17 @@ class BettingDataScraper:
         player_name = prop['participant']['name']
         team = prop['participant']['player']['team']
         team_corrected = self.TEAM_ABBREVIATIONS.get(team, team)
-        matchup = self.matchups.get(team_corrected, {})
+        
+        # Get matchup info from MLB schedule
+        matchup_info = self.mlb_schedule.get(team_corrected, {})
+        opponent = matchup_info.get('opponent', 'N/A')
+        home_indicator = matchup_info.get('home', 0)
 
         csv_writer.writerow([
             player_name,
-            self.create_player_abbreviation(player_name),
             team_corrected,
-            matchup.get('opponent', 'N/A'),
-            matchup.get('home', 'N/A'),
-            matchup.get('away', 'N/A'),
+            opponent,
+            home_indicator,
             prop.get('over', {}).get('line'),
             self.convert_odds_to_decimal(prop.get('over', {}).get('odds')),
             prop.get('under', {}).get('line'),
@@ -270,6 +307,10 @@ def main(date=None, output_file=None):
         
         logger.info(f"Searching data from date: {date_string}")
         
+        # Fetch MLB schedule data first
+        mlb_schedule = scraper.fetch_mlb_schedule(date_string)
+        logger.info(f"Fetched MLB schedule with {len(mlb_schedule)} team matchups")
+        
         # Get all events for the date
         event_ids = scraper.get_events(date_string)
         if not event_ids:
@@ -277,10 +318,6 @@ def main(date=None, output_file=None):
             return
 
         logger.info(f"Found {len(event_ids)} games for {date_string}")
-        
-        # Fetch matchups using event IDs
-        scraper.fetch_matchups(event_ids)
-        logger.info(f"Processed {len(scraper.matchups)} matchups")
 
         # Fetch and save props data
         props = scraper.fetch_props(date_string)

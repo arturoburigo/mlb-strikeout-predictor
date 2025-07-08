@@ -4,146 +4,133 @@ import os
 import re
 from datetime import datetime
 import warnings
+import sys
+import joblib
+import pickle
+
+# Add the parent directory to the path to import feature engineering
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from feature_engineering import calculate_simple_performance
 
 warnings.filterwarnings("ignore", category=UserWarning, module="lightgbm")
 
-def create_features_for_prediction(pitchers_df, pitcher_name, opponent_team=None):
+def check_model_files_exist(model_path='models/lightgbm_model.pkl'):
     """
-    Create features for a specific pitcher using the cleaned data format.
+    Check if the model files exist.
     
     Args:
-        pitchers_df (DataFrame): DataFrame with cleaned pitcher data
-        pitcher_name (str): Pitcher abbreviation
-        opponent_team (str, optional): Opponent team abbreviation
+        model_path: Path to the saved model
         
     Returns:
-        DataFrame: Single row with features for prediction
+        bool: True if both model and feature files exist
+    """
+    model_exists = os.path.exists(model_path)
+    feature_info_path = model_path.replace('.pkl', '_features.pkl')
+    features_exist = os.path.exists(feature_info_path)
+    
+    if not model_exists:
+        print(f"✗ Model file not found: {model_path}")
+    if not features_exist:
+        print(f"✗ Feature info file not found: {feature_info_path}")
+    
+    return model_exists and features_exist
+
+def load_trained_model(model_path='models/lightgbm_model.pkl'):
+    """
+    Load the pre-trained LightGBM model and feature information.
+    
+    Args:
+        model_path: Path to the saved model
+        
+    Returns:
+        tuple: (pipeline, feature_columns) or (None, None) if loading fails
+    """
+    # First check if files exist
+    if not check_model_files_exist(model_path):
+        return None, None
+    
+    try:
+        # Load the pipeline
+        pipeline = joblib.load(model_path)
+        
+        # Load feature columns
+        feature_info_path = model_path.replace('.pkl', '_features.pkl')
+        with open(feature_info_path, 'rb') as f:
+            feature_columns = pickle.load(f)
+        
+        print(f"✓ Pre-trained model loaded successfully from: {model_path}")
+        print(f"✓ Number of features: {len(feature_columns)}")
+        
+        return pipeline, feature_columns
+        
+    except Exception as e:
+        print(f"✗ Error loading pre-trained model: {e}")
+        return None, None
+
+def create_features_for_prediction(pitchers_df, pitcher_name, opponent_team=None):
+    """
+    Create features for a specific pitcher using the existing engineered features.
+    This extracts features directly from the engineered data instead of recreating them.
+    
+    Args:
+        pitchers_df (DataFrame): Engineered DataFrame with pitcher data
+        pitcher_name (str): Pitcher name
+        opponent_team (str, optional): Opponent team abbreviation (not used but kept for compatibility)
+        
+    Returns:
+        DataFrame: Single row with features for prediction using exact model features
     """
     # Filter data for the specific pitcher
-    pitcher_data = pitchers_df[pitchers_df['Pitcher'] == pitcher_name].copy()
+    pitcher_data = pitchers_df[pitchers_df['Pitcher_Name'] == pitcher_name].copy()
     
     if pitcher_data.empty:
         print(f"No data found for pitcher: {pitcher_name}")
         return None
     
-    # Sort by opponent to get chronological order
-    pitcher_data = pitcher_data.sort_values('Opp').reset_index(drop=True)
+    # Get the most recent data for this pitcher (typically 2025 season)
+    latest_record = pitcher_data.iloc[-1]
     
-    # Calculate basic rate statistics
-    pitcher_data['SO_per_IP'] = pitcher_data['SO'] / pitcher_data['IP']
-    pitcher_data['BB_per_IP'] = (pitcher_data['BF'] - pitcher_data['Str']) / pitcher_data['IP']
-    pitcher_data['Str_rate'] = pitcher_data['Str'] / pitcher_data['Pit']
-    pitcher_data['StS_rate'] = pitcher_data['StS'] / pitcher_data['Pit']
-    pitcher_data['StL_rate'] = pitcher_data['StL'] / pitcher_data['Pit']
-    pitcher_data['Pit_per_IP'] = pitcher_data['Pit'] / pitcher_data['IP']
-    pitcher_data['BF_per_IP'] = pitcher_data['BF'] / pitcher_data['IP']
-    pitcher_data['SO_per_BF'] = pitcher_data['SO'] / pitcher_data['BF']
-    pitcher_data['SO_per_Pit'] = pitcher_data['SO'] / pitcher_data['Pit']
+    # Load model features to know exactly what we need
+    try:
+        with open('models/lightgbm_model_features.pkl', 'rb') as f:
+            model_features = pickle.load(f)
+    except Exception as e:
+        print(f"Error loading model features: {e}")
+        return None
     
-    # Handle infinity and NaN values
-    numeric_columns = pitcher_data.select_dtypes(include=[np.number]).columns
-    for col in numeric_columns:
-        pitcher_data[col] = pitcher_data[col].replace([np.inf, -np.inf], 0)
-        pitcher_data[col] = pitcher_data[col].fillna(0)
+    # Create feature vector using exact model features
+    feature_vector = {}
     
-    # Clip extreme values
-    pitcher_data['SO_per_IP'] = pitcher_data['SO_per_IP'].clip(0, 20)
-    pitcher_data['BB_per_IP'] = pitcher_data['BB_per_IP'].clip(0, 10)
-    pitcher_data['Str_rate'] = pitcher_data['Str_rate'].clip(0, 1)
-    pitcher_data['StS_rate'] = pitcher_data['StS_rate'].clip(0, 1)
-    pitcher_data['StL_rate'] = pitcher_data['StL_rate'].clip(0, 1)
-    pitcher_data['Pit_per_IP'] = pitcher_data['Pit_per_IP'].clip(0, 50)
-    pitcher_data['BF_per_IP'] = pitcher_data['BF_per_IP'].clip(0, 10)
-    pitcher_data['SO_per_BF'] = pitcher_data['SO_per_BF'].clip(0, 1)
-    pitcher_data['SO_per_Pit'] = pitcher_data['SO_per_Pit'].clip(0, 1)
+    # Define columns to exclude (same as in training)
+    exclude_columns = ['Season', 'Pitcher_ID', 'Team_x', 'Pitcher_Name', 'Date', 'SO']
+    available_features = [col for col in pitchers_df.columns if col not in exclude_columns]
     
-    # Calculate rolling averages
-    pitcher_data['SO_rolling_3'] = pitcher_data['SO'].rolling(3, min_periods=1).mean()
-    pitcher_data['SO_rolling_5'] = pitcher_data['SO'].rolling(5, min_periods=1).mean()
-    pitcher_data['IP_rolling_3'] = pitcher_data['IP'].rolling(3, min_periods=1).mean()
-    pitcher_data['IP_rolling_5'] = pitcher_data['IP'].rolling(5, min_periods=1).mean()
+    # Extract features that exist in the data
+    for feature in model_features:
+        if feature in available_features:
+            feature_vector[feature] = latest_record[feature]
+        else:
+            # If feature is missing, set to 0 (will be handled during retraining)
+            feature_vector[feature] = 0
+            print(f"⚠️  Feature {feature} not found in data, setting to 0")
     
-    # Calculate pitcher averages
-    pitcher_avg = pitcher_data.agg({
-        'SO': 'mean',
-        'IP': 'mean',
-        'Pit': 'mean',
-        'Str': 'mean',
-        'StS': 'mean',
-        'StL': 'mean',
-        'BF': 'mean',
-        'WPA': 'mean'
-    })
+    # Create DataFrame with exact model features
+    features = pd.DataFrame([feature_vector])
     
-    # Get the most recent game data
-    latest_game = pitcher_data.iloc[-1]
+    # Convert categorical features to numeric (same as in training)
+    for col in features.columns:
+        if features[col].dtype == 'object':
+            features[col] = pd.to_numeric(features[col], errors='coerce').fillna(0)
     
-    # Get opponent strikeout average if available
-    if opponent_team and opponent_team != 'N/A':
-        opp_so_avg = pitcher_data[pitcher_data['Opp'] == opponent_team]['opp_so_avg'].mean()
-        if pd.isna(opp_so_avg):
-            opp_so_avg = pitcher_data['opp_so_avg'].mean()
-    else:
-        opp_so_avg = pitcher_data['opp_so_avg'].mean()
+    # Fill NaN values with 0
+    features = features.fillna(0)
     
-    # Normalize opponent strikeout average
-    opp_so_avg_norm = (opp_so_avg - pitcher_data['opp_so_avg'].mean()) / pitcher_data['opp_so_avg'].std()
+    # Handle infinite values
+    for col in features.columns:
+        if features[col].dtype in [np.float64, np.int64]:
+            features[col] = features[col].replace([np.inf, -np.inf], 0)
     
-    # Define feature columns in the same order as training
-    feature_columns = [
-        'IP', 'BF', 'Pit', 'Str', 'StS', 'StL', 'WPA',
-        'SO_per_IP', 'BB_per_IP', 'Str_rate', 'StS_rate', 'StL_rate',
-        'Pit_per_IP', 'BF_per_IP', 'SO_per_BF', 'SO_per_Pit',
-        'SO_rolling_3', 'SO_rolling_5', 'IP_rolling_3', 'IP_rolling_5',
-        'avg_SO', 'avg_IP', 'avg_Pit', 'avg_Str', 'avg_StS', 'avg_StL', 'avg_BF', 'avg_WPA',
-        'SO_vs_avg', 'IP_vs_avg', 'Pit_vs_avg',
-        'opp_so_avg', 'opp_so_avg_norm'
-    ]
-    
-    # Create features for prediction
-    features = pd.DataFrame([{
-        'IP': latest_game['IP'],
-        'BF': latest_game['BF'],
-        'Pit': latest_game['Pit'],
-        'Str': latest_game['Str'],
-        'StS': latest_game['StS'],
-        'StL': latest_game['StL'],
-        'WPA': latest_game['WPA'],
-        'SO_per_IP': latest_game['SO_per_IP'],
-        'BB_per_IP': latest_game['BB_per_IP'],
-        'Str_rate': latest_game['Str_rate'],
-        'StS_rate': latest_game['StS_rate'],
-        'StL_rate': latest_game['StL_rate'],
-        'Pit_per_IP': latest_game['Pit_per_IP'],
-        'BF_per_IP': latest_game['BF_per_IP'],
-        'SO_per_BF': latest_game['SO_per_BF'],
-        'SO_per_Pit': latest_game['SO_per_Pit'],
-        'SO_rolling_3': latest_game['SO_rolling_3'],
-        'SO_rolling_5': latest_game['SO_rolling_5'],
-        'IP_rolling_3': latest_game['IP_rolling_3'],
-        'IP_rolling_5': latest_game['IP_rolling_5'],
-        'avg_SO': pitcher_avg['SO'],
-        'avg_IP': pitcher_avg['IP'],
-        'avg_Pit': pitcher_avg['Pit'],
-        'avg_Str': pitcher_avg['Str'],
-        'avg_StS': pitcher_avg['StS'],
-        'avg_StL': pitcher_avg['StL'],
-        'avg_BF': pitcher_avg['BF'],
-        'avg_WPA': pitcher_avg['WPA'],
-        'SO_vs_avg': latest_game['SO'] - pitcher_avg['SO'],
-        'IP_vs_avg': latest_game['IP'] - pitcher_avg['IP'],
-        'Pit_vs_avg': latest_game['Pit'] - pitcher_avg['Pit'],
-        'opp_so_avg': opp_so_avg,
-        'opp_so_avg_norm': opp_so_avg_norm
-    }])
-    
-    # Ensure all features are present and in correct order
-    for col in feature_columns:
-        if col not in features.columns:
-            features[col] = 0
-    
-    # Return only the feature columns in the correct order
-    return features[feature_columns]
+    return features
 
 def predict_strikeouts_with_confidence(model, pitchers_df, pitcher_name, opponent_team, strikeout_line):
     """
@@ -151,8 +138,8 @@ def predict_strikeouts_with_confidence(model, pitchers_df, pitcher_name, opponen
     
     Args:
         model: Trained ML pipeline
-        pitchers_df: Pitchers historical data (cleaned format)
-        pitcher_name: Pitcher abbreviation
+        pitchers_df: Pitchers historical data
+        pitcher_name: Pitcher name
         opponent_team: Opponent team abbreviation
         strikeout_line: Betting line for strikeouts
         
@@ -220,7 +207,7 @@ def process_betting_data(model, pitchers_df, betting_data_path, output_dir=None)
     
     Args:
         model: Trained ML pipeline
-        pitchers_df: Pitchers historical data (cleaned format)
+        pitchers_df: Engineered pitchers historical data (should be from pitchers_data_engineered.csv)
         betting_data_path: Path to betting data CSV
         output_dir: Directory to save the output file (defaults to current directory)
         
@@ -239,10 +226,10 @@ def process_betting_data(model, pitchers_df, betting_data_path, output_dir=None)
     
     def has_historical_data(pitcher_name):
         """Check if pitcher has historical data available."""
-        return not pitchers_df[pitchers_df['Pitcher'] == pitcher_name].empty
+        return not pitchers_df[pitchers_df['Pitcher_Name'] == pitcher_name].empty
     
     for index, row in betting_data.iterrows():
-        pitcher_name = row['Name_abbreviation']
+        pitcher_name = row['Player']  # Use actual pitcher name, not team abbreviation
         opponent_team = row['Opponent'] if row['Opponent'] != 'N/A' else None
         strikeout_line = row['Over Line']  # Use Over Line as the betting line
         
@@ -296,8 +283,7 @@ def process_betting_data(model, pitchers_df, betting_data_path, output_dir=None)
     
     # Save the filtered data
     filtered_data.to_csv(output_path, index=False)
-    print(f"\nSaved predictions to {output_path}")
-    print(f"Original rows: {len(betting_data)} | Filtered rows with predictions: {len(filtered_data)}")
+    print(f"\nPredictions saved to: {output_path}")
     
     return filtered_data
 
@@ -338,45 +324,92 @@ def get_top_picks(predictions_df, n=10, verbose=True):
     
     return top_picks, formatted_output
 
-def main():
+def force_retrain_model():
+    """
+    Force retraining of the model by deleting existing model files and training new ones.
+    """
+    print("🔄 Force retraining model...")
+    
+    # Delete existing model files
+    model_files = ['models/lightgbm_model.pkl', 'models/lightgbm_model_features.pkl']
+    for file_path in model_files:
+        if os.path.exists(file_path):
+            os.remove(file_path)
+            print(f"✓ Deleted: {file_path}")
+    
+    # Train new model
+    from src.model.model_training import train_model
+    model, results = train_model()
+    
+    # Print model performance summary
+    print("\nModel performance summary:")
+    best_model_name = max(results, key=lambda k: results[k]['CV_R2'])
+    print(f"Best model: {best_model_name}")
+    print(f"CV R2 Score: {results[best_model_name]['CV_R2']:.4f}")
+    print(f"Test R2 Score: {results[best_model_name]['Test_R2']:.4f}")
+    print(f"Test MAE: {results[best_model_name]['Test_MAE']:.4f}")
+    
+    return model
+
+def main(force_retrain=False):
     """
     Main function to run the strikeout prediction workflow.
-    Loads data, trains the model, and processes betting data.
+    Loads data, loads or trains the model, and processes betting data.
+    
+    Args:
+        force_retrain (bool): If True, force retraining of the model
     """
     try:
-        print("Loading cleaned pitcher data...")
+        print("=== PITCHER STRIKEOUT PREDICTION WORKFLOW ===")
+        print("Loading engineered pitcher data...")
         
-        # Load the cleaned pitcher data
-        pitchers_df = pd.read_csv('pitchers_data_with_opp_so_cleaned.csv')
-        print(f"Loaded data for {pitchers_df['Pitcher'].nunique()} pitchers")
-        print(f"Total records: {len(pitchers_df)}")
+        # Load the ENGINEERED pitcher data (not the raw data)
+        pitchers_df = pd.read_csv('pitchers_data_engineered.csv')
+        print(f"✓ Loaded engineered data for {pitchers_df['Pitcher_Name'].nunique()} pitchers")
+        print(f"✓ Total records: {len(pitchers_df)}")
+        print(f"✓ Seasons available: {sorted(pitchers_df['Season'].unique())}")
         
-        # Train the model
-        print("\nTraining machine learning models...")
-        from src.model.model_training import train_model
-        model, results = train_model(pitchers_df)
-        
-        # Print model performance summary
-        print("\nModel performance summary:")
-        best_model_name = max(results, key=lambda k: results[k]['CV_R2'])
-        print(f"Best model: {best_model_name}")
-        print(f"CV R2 Score: {results[best_model_name]['CV_R2']:.4f}")
-        print(f"Test R2 Score: {results[best_model_name]['Test_R2']:.4f}")
-        print(f"Test MAE: {results[best_model_name]['Test_MAE']:.4f}")
+        # Handle model loading/training
+        if force_retrain:
+            model = force_retrain_model()
+        else:
+            # Load the pre-trained model
+            print("\nLoading pre-trained model...")
+            model, feature_columns = load_trained_model()
+            
+            # If model loading fails, fall back to training
+            if model is None:
+                print("\nPre-trained model not found or corrupted. Training new model...")
+                from model_training import train_model
+                model, results = train_model()
+                
+                # Print model performance summary
+                print("\nModel performance summary:")
+                if results:
+                    best_model_name = max(results, key=lambda k: results[k]['CV_R2'])
+                    print(f"Best model: {best_model_name}")
+                    print(f"CV R2 Score: {results[best_model_name]['CV_R2']:.4f}")
+                    print(f"Test R2 Score: {results[best_model_name]['Test_R2']:.4f}")
+                    print(f"Test MAE: {results[best_model_name]['Test_MAE']:.4f}")
+            else:
+                print("✓ Using pre-trained model for predictions")
+                print(f"✓ Model expects {len(feature_columns)} features")
+                print("💡 To retrain the model, delete the files in the 'models/' directory")
         
         # Find betting data file
         betting_files = [f for f in os.listdir('.') if f.startswith('betting_data_') and f.endswith('.csv')]
         if not betting_files:
-            print("No betting data files found!")
+            print("❌ No betting data files found!")
+            print("💡 Make sure you have a betting_data_YYYY-MM-DD.csv file in the current directory")
             return
         
         # Use the most recent betting file
         betting_files.sort(reverse=True)
         betting_file = betting_files[0]
-        print(f"\nUsing betting file: {betting_file}")
+        print(f"\n✓ Using betting file: {betting_file}")
         
         # Process betting data with predictions
-        print("\nProcessing betting data and making predictions...")
+        print("\n=== MAKING PREDICTIONS ===")
         predictions = process_betting_data(
             model=model,
             pitchers_df=pitchers_df,
@@ -389,30 +422,36 @@ def main():
             over_count = (predictions['ML Recommend Side'] == 'Over').sum()
             under_count = (predictions['ML Recommend Side'] == 'Under').sum()
             high_confidence = (predictions['ML Confidence Percentage'] >= 70).sum()
+            avg_confidence = predictions['ML Confidence Percentage'].mean()
             
-            print("\nPrediction Summary:")
-            print(f"Total predictions: {total_predictions}")
+            print(f"\n=== PREDICTION SUMMARY ===")
+            print(f"Total predictions made: {total_predictions}")
+            print(f"Average predicted SO: {predictions['ML Predict Value'].mean():.2f}")
+            print(f"Highest predicted SO: {predictions['ML Predict Value'].max():.2f}")
+            print(f"Lowest predicted SO: {predictions['ML Predict Value'].min():.2f}")
             print(f"Over recommendations: {over_count} ({over_count/total_predictions*100:.1f}%)")
             print(f"Under recommendations: {under_count} ({under_count/total_predictions*100:.1f}%)")
+            print(f"Average confidence: {avg_confidence:.1f}%")
             print(f"High confidence picks (≥70%): {high_confidence} ({high_confidence/total_predictions*100:.1f}%)")
-            
-            # Display top 5 highest confidence picks
-            if not predictions.empty:
-                print("\nTop 5 highest confidence picks:")
-                top_picks = predictions.sort_values('ML Confidence Percentage', ascending=False).head(5)
-                for _, pick in top_picks.iterrows():
-                    print(f"{pick['Player']} ({pick['Team']}): {pick['ML Predict Value']:.1f} "
-                          f"{pick['ML Recommend Side']} {pick['Over Line']} "
-                          f"[{pick['ML Confidence Percentage']:.1f}% confidence]")
+        else:
+            print("❌ No predictions were generated!")
+            print("💡 Check that your pitchers in the betting data have historical data in the engineered features file")
         
-        print("\nWorkflow completed successfully!")
+        print("\n✅ Workflow completed successfully!")
         return predictions
         
     except Exception as e:
-        print(f"Error occurred during prediction workflow: {e}")
+        print(f"❌ Error occurred during prediction workflow: {e}")
         import traceback
         traceback.print_exc()
         return None
 
 if __name__ == "__main__":
-    main()
+    import argparse
+    
+    parser = argparse.ArgumentParser(description='Pitcher Strikeout Prediction')
+    parser.add_argument('--retrain', action='store_true', 
+                       help='Force retraining of the model')
+    
+    args = parser.parse_args()
+    main(force_retrain=args.retrain)

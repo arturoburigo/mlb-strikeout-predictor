@@ -1,48 +1,91 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Script para fazer merge das tabelas pitchers_data.csv e team_strikeout_percentage.csv
-Adiciona a coluna opp_so_avg baseada na porcentagem de strikeout do time adversário
+Script to merge pitchers_data.csv and team_strikeout_percentage.csv tables
+Adds the opp_so_avg column based on the opponent team's strikeout percentage
 """
 
 import pandas as pd
 import numpy as np
+import re
 from pathlib import Path
 
 def merge_pitcher_team_strikeout_data():
     """
-    Faz o merge das tabelas de dados de pitchers com a porcentagem de strikeout por equipe
+    Merges pitcher data tables with team strikeout percentage data
     """
     
-    print("🔄 Iniciando merge das tabelas...")
+    print("🔄 Starting table merge...")
     
-    # Carregando os dados
-    print("📊 Carregando dados dos pitchers...")
-    pitchers_df = pd.read_csv('../../pitchers_data.csv')
+    # Loading data
+    print("📊 Loading pitcher data...")
+    pitchers_df = pd.read_csv('../../pitchers_detailed_data.csv')
     
-    print("📊 Carregando dados de porcentagem de strikeout por equipe...")
+    print("📊 Loading team strikeout percentage data...")
     team_so_df = pd.read_csv('../../team_strikeout_percentage.csv')
     
-    # Exibindo informações básicas
-    print(f"\n📋 Informações dos dados:")
-    print(f"Pitchers data: {pitchers_df.shape[0]} linhas, {pitchers_df.shape[1]} colunas")
-    print(f"Team strikeout data: {team_so_df.shape[0]} linhas, {team_so_df.shape[1]} colunas")
+    # Data cleaning
+    print("🧹 Cleaning data...")
     
-    print(f"\n🔍 Colunas dos dados de pitchers:")
+    # Removing asterisks from Pitcher_Name column
+    if 'Pitcher_Name' in pitchers_df.columns:
+        pitchers_df['Pitcher_Name'] = pitchers_df['Pitcher_Name'].str.replace('*', '', regex=False)
+        print("✅ Asterisks removed from Pitcher_Name column")
+    
+    # Cleaning date format (removing numbers in parentheses)
+    date_columns = [col for col in pitchers_df.columns if 'date' in col.lower() or 'Date' in col]
+    for col in date_columns:
+        if col in pitchers_df.columns:
+            # Remove patterns like "2023-07-01 (1)" or "2023-07-01 (2)"
+            pitchers_df[col] = pitchers_df[col].astype(str).str.replace(r'\s*\(\d+\)', '', regex=True)
+            print(f"✅ Date format cleaned in column {col}")
+    
+    # Checking for other date columns that might have the same issue
+    # Looking for columns containing dates in yyyy-mm-dd format
+    for col in pitchers_df.columns:
+        if pitchers_df[col].dtype == 'object':
+            # Check if the column contains strings that look like dates
+            sample_values = pitchers_df[col].dropna().astype(str).head(10)
+            if any(re.match(r'\d{4}-\d{2}-\d{2}', str(val)) for val in sample_values):
+                pitchers_df[col] = pitchers_df[col].astype(str).str.replace(r'\s*\(\d+\)', '', regex=True)
+                print(f"✅ Date format cleaned in column {col}")
+    
+    # Displaying cleaning examples
+    if 'Pitcher_Name' in pitchers_df.columns:
+        print(f"\n📊 Examples of pitcher names after cleaning:")
+        sample_names = pitchers_df['Pitcher_Name'].dropna().head(5)
+        for name in sample_names:
+            print(f"  - {name}")
+    
+    # Checking for problematic date formats
+    date_columns = [col for col in pitchers_df.columns if 'date' in col.lower() or 'Date' in col]
+    for col in date_columns:
+        if col in pitchers_df.columns:
+            sample_dates = pitchers_df[col].dropna().astype(str).head(5)
+            print(f"\n📊 Date examples in column {col}:")
+            for date in sample_dates:
+                print(f"  - {date}")
+    
+    # Displaying basic information
+    print(f"\n📋 Data information:")
+    print(f"Pitchers data: {pitchers_df.shape[0]} rows, {pitchers_df.shape[1]} columns")
+    print(f"Team strikeout data: {team_so_df.shape[0]} rows, {team_so_df.shape[1]} columns")
+    
+    print(f"\n🔍 Pitcher data columns:")
     print(pitchers_df.columns.tolist())
     
-    print(f"\n🔍 Colunas dos dados de strikeout por equipe:")
+    print(f"\n🔍 Team strikeout data columns:")
     print(team_so_df.columns.tolist())
     
-    # Verificando valores únicos nas colunas de join
-    print(f"\n📊 Valores únicos em 'Season' (pitchers): {sorted(pitchers_df['Season'].unique())}")
-    print(f"📊 Valores únicos em 'Opp' (pitchers): {sorted(pitchers_df['Opp'].unique())}")
-    print(f"📊 Valores únicos em 'Team' (strikeout): {sorted(team_so_df['Team'].unique())}")
+    # Checking unique values in join columns
+    print(f"\n📊 Unique values in 'Season' (pitchers): {sorted(pitchers_df['Season'].unique())}")
+    print(f"📊 Unique values in 'Opp' (pitchers): {sorted(pitchers_df['Opp'].unique())}")
+    print(f"📊 Unique values in 'Team' (strikeout): {sorted(team_so_df['Team'].unique())}")
     
-    # Preparando o dataframe de strikeout para o merge
-    print("\n🔄 Preparando dados de strikeout para merge...")
+    # Preparing strikeout dataframe for merge
+    print("\n🔄 Preparing strikeout data for merge...")
     
-    # Transformando o dataframe de strikeout de wide para long format
+    # Transforming strikeout dataframe from wide to long format
     team_so_long = team_so_df.melt(
         id_vars=['Team'], 
         value_vars=['2023', '2024', '2025'], 
@@ -50,21 +93,21 @@ def merge_pitcher_team_strikeout_data():
         value_name='opp_so_avg'
     )
     
-    # Formatando a coluna opp_so_avg para duas casas decimais
+    # Formatting opp_so_avg column to two decimal places
     team_so_long['opp_so_avg'] = team_so_long['opp_so_avg'].round(2)
     
-    # Convertendo Season para string para garantir compatibilidade
+    # Converting Season to string to ensure compatibility
     team_so_long['Season'] = team_so_long['Season'].astype(str)
     pitchers_df['Season'] = pitchers_df['Season'].astype(str)
     
-    print(f"📊 Team strikeout data após transformação: {team_so_long.shape[0]} linhas")
-    print(f"📊 Exemplo dos dados transformados:")
+    print(f"📊 Team strikeout data after transformation: {team_so_long.shape[0]} rows")
+    print(f"📊 Example of transformed data:")
     print(team_so_long.head(10))
     
-    # Fazendo o merge
-    print("\n🔗 Fazendo o merge das tabelas...")
+    # Performing the merge
+    print("\n🔗 Merging tables...")
     
-    # Merge baseado em Season e Opp (time adversário)
+    # Merge based on Season and Opp (opponent team)
     merged_df = pitchers_df.merge(
         team_so_long,
         left_on=['Season', 'Opp'],
@@ -72,28 +115,28 @@ def merge_pitcher_team_strikeout_data():
         how='left'
     )
     
-    # Removendo a coluna Team duplicada (se existir)
+    # Removing duplicate Team column (if exists)
     if 'Team' in merged_df.columns:
         merged_df = merged_df.drop('Team', axis=1)
     
-    # Verificando o resultado do merge
-    print(f"\n✅ Merge concluído!")
-    print(f"📊 Dados originais: {pitchers_df.shape[0]} linhas")
-    print(f"📊 Dados após merge: {merged_df.shape[0]} linhas")
-    print(f"📊 Colunas após merge: {merged_df.shape[1]} colunas")
+    # Checking merge results
+    print(f"\n✅ Merge completed!")
+    print(f"📊 Original data: {pitchers_df.shape[0]} rows")
+    print(f"📊 Data after merge: {merged_df.shape[0]} rows")
+    print(f"📊 Columns after merge: {merged_df.shape[1]} columns")
     
-    # Verificando valores nulos na nova coluna
+    # Checking null values in new column
     null_count = merged_df['opp_so_avg'].isnull().sum()
-    print(f"📊 Valores nulos em 'opp_so_avg': {null_count} ({null_count/len(merged_df)*100:.2f}%)")
+    print(f"📊 Null values in 'opp_so_avg': {null_count} ({null_count/len(merged_df)*100:.2f}%)")
     
     if null_count > 0:
-        print("\n⚠️  Valores nulos encontrados. Verificando possíveis causas...")
+        print("\n⚠️  Null values found. Checking possible causes...")
         
-        # Verificando quais times não foram encontrados
+        # Checking which teams were not found
         null_opps = merged_df[merged_df['opp_so_avg'].isnull()]['Opp'].unique()
-        print(f"📊 Times não encontrados no merge: {sorted(null_opps)}")
+        print(f"📊 Teams not found in merge: {sorted(null_opps)}")
         
-        # Verificando se há diferenças nos nomes dos times
+        # Checking for differences in team names
         pitchers_opps = set(pitchers_df['Opp'].unique())
         team_so_teams = set(team_so_df['Team'].unique())
         
@@ -101,96 +144,137 @@ def merge_pitcher_team_strikeout_data():
         missing_in_pitchers = team_so_teams - pitchers_opps
         
         if missing_in_team_so:
-            print(f"📊 Times em pitchers_data.csv que não estão em team_strikeout_percentage.csv: {sorted(missing_in_team_so)}")
+            print(f"📊 Teams in pitchers_data.csv that are not in team_strikeout_percentage.csv: {sorted(missing_in_team_so)}")
         
         if missing_in_pitchers:
-            print(f"📊 Times em team_strikeout_percentage.csv que não estão em pitchers_data.csv: {sorted(missing_in_pitchers)}")
+            print(f"📊 Teams in team_strikeout_percentage.csv that are not in pitchers_data.csv: {sorted(missing_in_pitchers)}")
+        
+        # Handling team name mismatches with fallback mappings
+        print("\n🔄 Attempting to fix team name mismatches...")
+        
+        # Define team name mappings for common mismatches
+        team_mappings = {
+            'ATH': 'OAK',  # Athletics
+            'OAK': 'OAK',  # Oakland Athletics
+        }
+        
+        # Create a copy of the original data for fallback merge
+        pitchers_df_fallback = pitchers_df.copy()
+        
+        # Apply team name mappings to pitchers data
+        for old_name, new_name in team_mappings.items():
+            if old_name in pitchers_df_fallback['Opp'].values:
+                pitchers_df_fallback.loc[pitchers_df_fallback['Opp'] == old_name, 'Opp'] = new_name
+                print(f"✅ Mapped '{old_name}' to '{new_name}' in pitchers data")
+        
+        # Try merge again with mapped team names
+        merged_df_fallback = pitchers_df_fallback.merge(
+            team_so_long,
+            left_on=['Season', 'Opp'],
+            right_on=['Season', 'Team'],
+            how='left'
+        )
+        
+        # Remove duplicate Team column if exists
+        if 'Team' in merged_df_fallback.columns:
+            merged_df_fallback = merged_df_fallback.drop('Team', axis=1)
+        
+        # Check if fallback merge improved the results
+        null_count_fallback = merged_df_fallback['opp_so_avg'].isnull().sum()
+        improvement = null_count - null_count_fallback
+        
+        if improvement > 0:
+            print(f"✅ Fallback merge successful! Reduced null values from {null_count} to {null_count_fallback} ({improvement} fixed)")
+            merged_df = merged_df_fallback
+            null_count = null_count_fallback
+        else:
+            print(f"⚠️  Fallback merge did not improve results. Null values remain: {null_count}")
     
-    # Exibindo estatísticas da nova coluna
-    print(f"\n📊 Estatísticas da coluna 'opp_so_avg':")
+    # Displaying statistics of new column
+    print(f"\n📊 Statistics of 'opp_so_avg' column:")
     print(merged_df['opp_so_avg'].describe())
     
-    # Exibindo algumas linhas de exemplo
-    print(f"\n📊 Exemplo dos dados após merge:")
-    print(merged_df[['Season', 'Pitcher', 'Opp', 'opp_so_avg']].head(10))
+    # Displaying some example rows
+    print(f"\n📊 Example of data after merge:")
+    print(merged_df[['Season', 'Pitcher_Name', 'Opp', 'opp_so_avg']].head(10))
     
-    # Salvando o resultado
+    # Saving results
     output_file = '../pitchers_data_with_opp_so.csv'
     merged_df.to_csv(output_file, index=False)
-    print(f"\n💾 Dados salvos em: {output_file}")
+    print(f"\n💾 Data saved to: {output_file}")
     
-    # Verificando a qualidade do merge
-    print(f"\n🔍 Verificação da qualidade do merge:")
+    # Checking merge quality
+    print(f"\n🔍 Merge quality verification:")
     
-    # Verificando se todos os anos foram processados
+    # Checking if all years were processed
     years_processed = merged_df['Season'].unique()
-    print(f"📊 Anos processados: {sorted(years_processed)}")
+    print(f"📊 Processed years: {sorted(years_processed)}")
     
-    # Verificando a distribuição da nova coluna por ano
-    print(f"\n📊 Distribuição de 'opp_so_avg' por ano:")
+    # Checking distribution of new column by year
+    print(f"\n📊 Distribution of 'opp_so_avg' by year:")
     for year in sorted(years_processed):
         year_data = merged_df[merged_df['Season'] == year]['opp_so_avg']
-        print(f"  {year}: Média = {year_data.mean():.2f}%, Mediana = {year_data.median():.2f}%")
+        print(f"  {year}: Mean = {year_data.mean():.2f}%, Median = {year_data.median():.2f}%")
     
-    # Verificando se há valores extremos ou suspeitos
-    print(f"\n📊 Verificação de valores extremos:")
-    print(f"  Mínimo: {merged_df['opp_so_avg'].min():.2f}%")
-    print(f"  Máximo: {merged_df['opp_so_avg'].max():.2f}%")
+    # Checking for extreme or suspicious values
+    print(f"\n📊 Extreme values check:")
+    print(f"  Minimum: {merged_df['opp_so_avg'].min():.2f}%")
+    print(f"  Maximum: {merged_df['opp_so_avg'].max():.2f}%")
     
-    # Verificando se os valores fazem sentido (entre 50% e 80%)
+    # Checking if values make sense (between 50% and 80%)
     valid_range = merged_df[(merged_df['opp_so_avg'] >= 50) & (merged_df['opp_so_avg'] <= 80)]
-    print(f"  Valores no range esperado (50-80%): {len(valid_range)}/{len(merged_df)} ({len(valid_range)/len(merged_df)*100:.2f}%)")
+    print(f"  Values in expected range (50-80%): {len(valid_range)}/{len(merged_df)} ({len(valid_range)/len(merged_df)*100:.2f}%)")
     
     return merged_df
 
 def analyze_merge_results(df):
     """
-    Analisa os resultados do merge
+    Analyzes the merge results
     """
-    print(f"\n📈 ANÁLISE DOS RESULTADOS DO MERGE")
+    print(f"\n📈 MERGE RESULTS ANALYSIS")
     print("=" * 50)
     
-    # Análise por time adversário
-    print(f"\n🏟️  Análise por time adversário (Top 10 com mais jogos):")
+    # Analysis by opponent team
+    print(f"\n🏟️  Analysis by opponent team (Top 10 with most games):")
     opp_counts = df['Opp'].value_counts().head(10)
     for opp, count in opp_counts.items():
         avg_so = df[df['Opp'] == opp]['opp_so_avg'].mean()
-        print(f"  {opp}: {count} jogos, SO% médio = {avg_so:.2f}%")
+        print(f"  {opp}: {count} games, average SO% = {avg_so:.2f}%")
     
-    # Análise por pitcher
-    print(f"\n⚾ Análise por pitcher (Top 10 com mais jogos):")
-    pitcher_counts = df['Pitcher'].value_counts().head(10)
+    # Analysis by pitcher
+    print(f"\n⚾ Analysis by pitcher (Top 10 with most games):")
+    pitcher_counts = df['Pitcher_Name'].value_counts().head(10)
     for pitcher, count in pitcher_counts.items():
-        avg_opp_so = df[df['Pitcher'] == pitcher]['opp_so_avg'].mean()
-        print(f"  {pitcher}: {count} jogos, SO% médio dos adversários = {avg_opp_so:.2f}%")
+        avg_opp_so = df[df['Pitcher_Name'] == pitcher]['opp_so_avg'].mean()
+        print(f"  {pitcher}: {count} games, average opponent SO% = {avg_opp_so:.2f}%")
     
-    # Análise por ano
-    print(f"\n📅 Análise por ano:")
+    # Analysis by year
+    print(f"\n📅 Analysis by year:")
     for year in sorted(df['Season'].unique()):
         year_data = df[df['Season'] == year]
-        print(f"  {year}: {len(year_data)} jogos, SO% médio dos adversários = {year_data['opp_so_avg'].mean():.2f}%")
+        print(f"  {year}: {len(year_data)} games, average opponent SO% = {year_data['opp_so_avg'].mean():.2f}%")
     
-    # Verificando correlação entre SO do pitcher e SO% do adversário
-    print(f"\n🔗 Correlação entre SO do pitcher e SO% do adversário:")
+    # Checking correlation between pitcher SO and opponent SO%
+    print(f"\n🔗 Correlation between pitcher SO and opponent SO%:")
     correlation = df['SO'].corr(df['opp_so_avg'])
-    print(f"  Correlação: {correlation:.3f}")
+    print(f"  Correlation: {correlation:.3f}")
     
     if abs(correlation) > 0.1:
-        print(f"  💡 Há uma correlação {'positiva' if correlation > 0 else 'negativa'} moderada")
+        print(f"  💡 There is a {'positive' if correlation > 0 else 'negative'} moderate correlation")
     else:
-        print(f"  💡 Correlação muito baixa")
+        print(f"  💡 Very low correlation")
 
 if __name__ == "__main__":
     try:
-        # Executando o merge
+        # Executing the merge
         merged_data = merge_pitcher_team_strikeout_data()
         
-        # Analisando os resultados
+        # Analyzing the results
         analyze_merge_results(merged_data)
         
-        print(f"\n✅ Processo concluído com sucesso!")
+        print(f"\n✅ Process completed successfully!")
         
     except Exception as e:
-        print(f"❌ Erro durante o processo: {str(e)}")
+        print(f"❌ Error during process: {str(e)}")
         import traceback
         traceback.print_exc()

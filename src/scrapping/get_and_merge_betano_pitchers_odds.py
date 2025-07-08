@@ -62,9 +62,11 @@ def wait_for_element(driver, by, value, timeout=10):
         return None
     
 
+
+
 def merge_with_betting_data(resultados):
     """
-    Merges the scraped Betano data with existing betting data
+    Adds Betano data columns to existing betting data without removing any existing columns
     """
     if not resultados:
         logger.warning("No results to merge")
@@ -91,7 +93,8 @@ def merge_with_betting_data(resultados):
         current_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
         
         # Read the existing betting data CSV file
-        betting_data_path = os.path.join(current_dir, 'betting_data_2025-07-02.csv')
+        current_date = datetime.now().strftime("%Y-%m-%d")
+        betting_data_path = os.path.join(current_dir, f'betting_data_{current_date}.csv')
         
         if not os.path.exists(betting_data_path):
             logger.error(f"Betting data file not found: {betting_data_path}")
@@ -101,15 +104,6 @@ def merge_with_betting_data(resultados):
         betting_data = pd.read_csv(betting_data_path)
         logger.info(f"Betting data columns: {list(betting_data.columns)}")
         logger.info(f"Betting data shape: {betting_data.shape}")
-        
-        # Remove rows where Over Line or Under Line is empty
-        betting_data = betting_data.dropna(subset=['Over Line', 'Under Line'])
-        
-        # Remove the specified columns from betting_data - only those that exist
-        columns_to_drop = ['Over Line', 'Under Line', 'Over Odds', 'Under Odds']
-        # Only drop columns that actually exist in the dataframe
-        columns_to_drop = [col for col in columns_to_drop if col in betting_data.columns]
-        betting_data = betting_data.drop(columns=columns_to_drop)
         
         # Remove the Team column from betano_data
         betano_df = betano_df.drop(columns=['Team'])
@@ -124,7 +118,7 @@ def merge_with_betting_data(resultados):
         
         # Perform the join on the Player column (now betano_player)
         # Using left join to keep all records from betting_data
-        logger.info("Merging Betano data with existing betting data...")
+        logger.info("Adding Betano data to existing betting data...")
         
         # Check if Player column exists in betting_data
         if 'Player' not in betting_data.columns:
@@ -137,19 +131,16 @@ def merge_with_betting_data(resultados):
         if 'betano_player' in merged_data.columns:
             merged_data = merged_data.drop(columns=['betano_player'])
         
-        # Remove rows where the betano_line column is empty
-        merged_data = merged_data.dropna(subset=['betano_line'])
-        
         # Save back to the original betting_data file
         merged_data.to_csv(betting_data_path, index=False)
         
-        logger.info(f"Files merged successfully. Original file has been updated: {betting_data_path}")
+        logger.info(f"Betano data added successfully to: {betting_data_path}")
         logger.info(f"Total rows in merged data: {len(merged_data)}")
         
         return merged_data
         
     except Exception as e:
-        logger.error(f"Error merging data: {str(e)}")
+        logger.error(f"Error adding Betano data: {str(e)}")
         return None
 
 def save_to_csv(resultados, filename=None):
@@ -287,13 +278,13 @@ def scrape_betano(headless=True, merge_data=True, save_debug_csv=False):
         if save_debug_csv and resultados:
             save_to_csv(resultados)
         
-        # Merge results with betting data if requested
+        # Add Betano data to betting data if requested
         if merge_data and resultados:
             merged_data = merge_with_betting_data(resultados)
             if merged_data is not None:
-                logger.info("Data merging completed successfully")
+                logger.info("Betano data added successfully")
             else:
-                logger.warning("Data merging failed, but scraping was successful")
+                logger.warning("Data addition failed, but scraping was successful")
             
         return resultados
         
@@ -312,7 +303,7 @@ def main():
     # Configure command line arguments
     parser = argparse.ArgumentParser(description='Scraper for Betano strikeout data')
     parser.add_argument('--no-headless', action='store_true', help='Run browser in visible mode (not headless)')
-    parser.add_argument('--no-merge', action='store_true', help='Do not merge results with betting data')
+    parser.add_argument('--no-merge', action='store_true', help='Do not add Betano data to betting data')
     parser.add_argument('--save-debug-csv', action='store_true', help='Save scraped data to CSV file for debugging')
     args = parser.parse_args()
     

@@ -1,189 +1,238 @@
 import pandas as pd
 import numpy as np
 
-def calculate_weighted_performance(pitcher_data, current_season, last_season=None):
+def calculate_simple_performance(pitcher_data, current_season):
     """
-    Calculate weighted performance metrics for a pitcher based on current and previous seasons.
+    Calculate simple performance metrics for a pitcher based on current season data.
+    Focuses on the most important features without complex weighting.
     
     Args:
         pitcher_data (DataFrame): Historical data for a specific pitcher
         current_season (int): Current season year
-        last_season (int, optional): Previous season year
         
     Returns:
-        dict: Dictionary of weighted performance metrics
+        dict: Dictionary of performance metrics
     """
-    # Create a copy to avoid the SettingWithCopyWarning
+    # Get current season data
     current_season_data = pitcher_data[pitcher_data['Season'] == current_season].copy()
     
     # Check if we have current season data
     if current_season_data.empty:
         return {}
-        
-    # Get last 5 and 10 games data
-    last_5_games = current_season_data.tail(5)
-    last_10_games = current_season_data.tail(10)
     
-    # Calculate rolling averages correctly using .loc
-    current_season_data.loc[:, 'SO_rolling_5'] = current_season_data['SO'].rolling(5).mean()
-    current_season_data.loc[:, 'SO_rolling_10'] = current_season_data['SO'].rolling(10).mean()
+    # Calculate simple averages for key metrics
+    performance_metrics = {}
     
-    # Calculate home/away splits
-    home_stats = current_season_data[current_season_data['Home'] == 1.0].mean(numeric_only=True)
-    away_stats = current_season_data[current_season_data['Home'] == 0.0].mean(numeric_only=True)
-
-    if last_season is not None:
-        last_season_data = pitcher_data[pitcher_data['Season'] == last_season]
-        weight_current_season = 0.40
-        weight_last_5_games = 0.25
-        weight_last_10_games = 0.15
-        weight_last_season = 0.20
+    # Basic pitching metrics
+    performance_metrics['avg_innings_pitched'] = current_season_data['IP'].mean()
+    performance_metrics['avg_strikeouts'] = current_season_data['SO'].mean()
+    performance_metrics['avg_walks'] = current_season_data['BB'].mean()
+    performance_metrics['avg_era'] = current_season_data['ERA'].mean()
+    performance_metrics['avg_fip'] = current_season_data['FIP'].mean()
+    performance_metrics['avg_batters_faced'] = current_season_data['BF'].mean()
+    performance_metrics['avg_total_pitches'] = current_season_data['Pit'].mean()
+    performance_metrics['avg_strikes_thrown'] = current_season_data['Str'].mean()
+    performance_metrics['avg_swinging_strikes'] = current_season_data['StS'].mean()
+    performance_metrics['avg_looking_strikes'] = current_season_data['StL'].mean()
+    
+    # Calculate derived metrics
+    if performance_metrics['avg_innings_pitched'] > 0:
+        performance_metrics['strikeouts_per_inning'] = performance_metrics['avg_strikeouts'] / performance_metrics['avg_innings_pitched']
+        performance_metrics['walks_per_inning'] = performance_metrics['avg_walks'] / performance_metrics['avg_innings_pitched']
+        performance_metrics['k_minus_bb_rate'] = performance_metrics['strikeouts_per_inning'] - performance_metrics['walks_per_inning']
     else:
-        last_season_data = pd.DataFrame()
-        weight_current_season = 0.50
-        weight_last_5_games = 0.30
-        weight_last_10_games = 0.20
-        weight_last_season = 0.0
-
-    # Define metrics only if they exist in our dataframes
-    base_metrics = ['IP', 'H', 'BB', 'ERA', 'FIP', 'SO']
-    rolling_metrics = []
+        performance_metrics['strikeouts_per_inning'] = 0
+        performance_metrics['walks_per_inning'] = 0
+        performance_metrics['k_minus_bb_rate'] = 0
     
-    # Only add rolling metrics if they're successfully calculated
-    if not current_season_data['SO_rolling_5'].isna().all():
-        rolling_metrics.append('SO_rolling_5')
-    if not current_season_data['SO_rolling_10'].isna().all():
-        rolling_metrics.append('SO_rolling_10')
+    if performance_metrics['avg_batters_faced'] > 0:
+        performance_metrics['strikeouts_per_batter'] = performance_metrics['avg_strikeouts'] / performance_metrics['avg_batters_faced']
+        performance_metrics['swinging_strike_rate'] = performance_metrics['avg_swinging_strikes'] / performance_metrics['avg_batters_faced']
+    else:
+        performance_metrics['strikeouts_per_batter'] = 0
+        performance_metrics['swinging_strike_rate'] = 0
     
-    metrics = base_metrics + rolling_metrics
-    weighted_values = {}
-
-    for metric in metrics:
-        # Ensure last 5 and last 10 have the metric (they might not have rolling averages)
-        metric_in_last5 = metric in last_5_games.columns
-        metric_in_last10 = metric in last_10_games.columns
-        metric_in_lastseason = metric in last_season_data.columns
-        
-        current_mean = current_season_data[metric].mean() if not current_season_data.empty else 0
-        last_5_mean = last_5_games[metric].mean() if not last_5_games.empty and metric_in_last5 else 0
-        last_10_mean = last_10_games[metric].mean() if not last_10_games.empty and metric_in_last10 else 0
-        last_season_mean = last_season_data[metric].mean() if not last_season_data.empty and metric_in_lastseason else 0
-
-        weighted_values[metric] = (
-            weight_current_season * current_mean +
-            weight_last_5_games * last_5_mean +
-            weight_last_10_games * last_10_mean +
-            weight_last_season * last_season_mean
-        )
+    if performance_metrics['avg_total_pitches'] > 0:
+        performance_metrics['strikeouts_per_pitch'] = performance_metrics['avg_strikeouts'] / performance_metrics['avg_total_pitches']
+    else:
+        performance_metrics['strikeouts_per_pitch'] = 0
     
-    # Add home/away splits
-    weighted_values['Home_IP'] = home_stats.get('IP', 0)
-    weighted_values['Away_IP'] = away_stats.get('IP', 0)
-    weighted_values['Home_SO'] = home_stats.get('SO', 0)
-    weighted_values['Away_SO'] = away_stats.get('SO', 0)
-    weighted_values['Home'] = current_season_data['Home'].mean()
+    # Recent form (last 5 games)
+    if len(current_season_data) >= 5:
+        recent_5_games = current_season_data.tail(5)
+        performance_metrics['avg_strikeouts_last_5_games'] = recent_5_games['SO'].mean()
+    else:
+        performance_metrics['avg_strikeouts_last_5_games'] = performance_metrics['avg_strikeouts']
     
-    return weighted_values
+    # Season average comparison
+    performance_metrics['strikeouts_vs_season_avg'] = performance_metrics['avg_strikeouts'] - current_season_data['SO'].mean()
+    performance_metrics['innings_vs_season_avg'] = performance_metrics['avg_innings_pitched'] - current_season_data['IP'].mean()
+    
+    # Consistency (standard deviation of SO)
+    performance_metrics['strikeout_consistency'] = current_season_data['SO'].std()
+    
+    # Workload (total innings pitched)
+    performance_metrics['total_innings_pitched_season'] = current_season_data['IP'].sum()
+    
+    # Game order (number of games played)
+    performance_metrics['games_played_this_season'] = len(current_season_data)
+    
+    # Momentum (trend in last 3 games)
+    if len(current_season_data) >= 3:
+        last_3_games = current_season_data.tail(3)
+        if len(last_3_games) >= 2:
+            performance_metrics['strikeout_momentum_last_3_games'] = last_3_games['SO'].iloc[-1] - last_3_games['SO'].iloc[0]
+        else:
+            performance_metrics['strikeout_momentum_last_3_games'] = 0
+    else:
+        performance_metrics['strikeout_momentum_last_3_games'] = 0
+    
+    return performance_metrics
 
-def main(pitchers_df, k_percentage_df):
+def main(pitchers_df, k_percentage_df=None):
     """
-    Main function to calculate weighted performance metrics for pitchers.
+    Main function to calculate performance metrics for pitchers.
     
     Args:
         pitchers_df (DataFrame): DataFrame containing pitcher data
-        k_percentage_df (DataFrame): DataFrame containing strikeout percentage data
+        k_percentage_df (DataFrame): (Unused) DataFrame containing strikeout percentage data
         
     Returns:
-        DataFrame: Engineered features DataFrame
+        DataFrame: Engineered features DataFrame with original data preserved
     """
     try:
-        # Define current and previous seasons
+        # Define current season
         current_season = 2025
-        last_season = 2024
         
         # Get unique pitchers
-        unique_pitchers = pitchers_df['Pitcher'].unique()
+        unique_pitchers = pitchers_df['Pitcher_Name'].unique()
         print(f"Found {len(unique_pitchers)} unique pitchers in the dataset")
         
-        # Calculate weighted performance for each pitcher
-        all_weighted_stats = {}
+        # Calculate performance for each pitcher
+        all_performance_stats = {}
+        opp_kpct = {}
         for pitcher in unique_pitchers:
-            pitcher_records = pitchers_df[pitchers_df['Pitcher'] == pitcher]
+            pitcher_records = pitchers_df[pitchers_df['Pitcher_Name'] == pitcher]
             
             # Only process pitchers with data in the current season
             if current_season in pitcher_records['Season'].values:
-                weighted_stats = calculate_weighted_performance(
+                performance_stats = calculate_simple_performance(
                     pitcher_records, 
-                    current_season, 
-                    last_season
+                    current_season
                 )
-                if weighted_stats:  # Only add if we got results
-                    all_weighted_stats[pitcher] = weighted_stats
+                if performance_stats:  # Only add if we got results
+                    all_performance_stats[pitcher] = performance_stats
+                    # Use mean opp_so_avg for this pitcher in current season
+                    opp_kpct[pitcher] = pitcher_records[pitcher_records['Season'] == current_season]['opp_so_avg'].mean()
         
         # Convert the dictionary to a DataFrame
-        engineered_data = pd.DataFrame.from_dict(all_weighted_stats, orient='index')
+        engineered_data = pd.DataFrame.from_dict(all_performance_stats, orient='index')
         
-        # Add derived features with safety checks to avoid division by zero and infinity values
-        engineered_data['IP'] = engineered_data['IP'].replace(0, 1)  # Avoid division by zero
+        # Add Opp_K% from opp_so_avg
+        engineered_data['opponent_strikeout_percentage'] = engineered_data.index.map(opp_kpct)
         
-        # Calculate SO_per_IP with safety checks
-        engineered_data['SO_per_IP'] = engineered_data['SO'] / engineered_data['IP']
-        engineered_data['SO_per_IP'] = engineered_data['SO_per_IP'].replace([np.inf, -np.inf], 0)
-        engineered_data['SO_per_IP'] = engineered_data['SO_per_IP'].clip(0, 20)  # Cap at reasonable value
-        
-        # Calculate BB_per_IP with safety checks
-        engineered_data['BB_per_IP'] = engineered_data['BB'] / engineered_data['IP']
-        engineered_data['BB_per_IP'] = engineered_data['BB_per_IP'].replace([np.inf, -np.inf], 0)
-        engineered_data['BB_per_IP'] = engineered_data['BB_per_IP'].clip(0, 10)  # Cap at reasonable value
-        
-        # Calculate K-BB% with safety checks
-        engineered_data['K-BB%'] = engineered_data['SO_per_IP'] - engineered_data['BB_per_IP']
-        engineered_data['K-BB%'] = engineered_data['K-BB%'].clip(-10, 20)  # Cap at reasonable values
-        
-        # Merge with k_percentage_df if needed
-        if not k_percentage_df.empty:
-            engineered_data = engineered_data.merge(
-                k_percentage_df,
-                left_index=True,
-                right_index=True
-            )
-            engineered_data.rename(columns={'%K': 'Team_K%'}, inplace=True)
-            engineered_data['Opp_K%'] = engineered_data['Team_K%']  # Use same value for now
-        
-        # Ensure all required features exist
+        # Ensure all required features exist and handle NaN values
         required_features = [
-            'IP', 'H', 'BB', 'ERA', 'FIP', 'SO_per_IP', 'BB_per_IP', 'K-BB%', 
-            'Opp_K%', 'Team_K%', 'Home', 'SO_rolling_5', 'SO_rolling_10',
-            'Home_IP', 'Away_IP', 'Home_SO', 'Away_SO'
+            'avg_innings_pitched', 'avg_strikeouts', 'avg_walks', 'avg_era', 'avg_fip', 
+            'strikeouts_per_inning', 'walks_per_inning', 'k_minus_bb_rate', 
+            'opponent_strikeout_percentage', 'avg_batters_faced', 'avg_total_pitches',
+            'avg_strikes_thrown', 'avg_swinging_strikes', 'avg_looking_strikes',
+            'strikeouts_per_batter', 'swinging_strike_rate', 'strikeouts_per_pitch', 
+            'avg_strikeouts_last_5_games', 'strikeouts_vs_season_avg',
+            'innings_vs_season_avg', 'strikeout_consistency', 'total_innings_pitched_season', 
+            'games_played_this_season', 'strikeout_momentum_last_3_games'
         ]
         
         for feature in required_features:
             if feature not in engineered_data.columns:
                 engineered_data[feature] = 0
         
+        # Fill NaN values with 0
+        engineered_data = engineered_data.fillna(0)
+        
         # Final check for any remaining infinity or extremely large values
         for col in engineered_data.columns:
             if engineered_data[col].dtype in [np.float64, np.int64]:
                 engineered_data[col] = engineered_data[col].replace([np.inf, -np.inf], 0)
                 # Clip extremely large values to reasonable ranges
-                if col in ['ERA', 'FIP']:
+                if col in ['avg_era', 'avg_fip']:
                     engineered_data[col] = engineered_data[col].clip(0, 20)
-                elif col in ['SO_rolling_5', 'SO_rolling_10', 'Home_SO', 'Away_SO']:
+                elif col in ['strikeouts_per_inning', 'walks_per_inning', 'strikeouts_per_batter', 'swinging_strike_rate', 'strikeouts_per_pitch']:
+                    engineered_data[col] = engineered_data[col].clip(0, 5)
+                elif col in ['avg_strikeouts_last_5_games', 'avg_strikeouts']:
                     engineered_data[col] = engineered_data[col].clip(0, 20)
-                elif col in ['Home_IP', 'Away_IP']:
+                elif col in ['avg_innings_pitched']:
                     engineered_data[col] = engineered_data[col].clip(0, 10)
+                elif col in ['total_innings_pitched_season']:
+                    engineered_data[col] = engineered_data[col].clip(0, 200)
+                elif col in ['games_played_this_season']:
+                    engineered_data[col] = engineered_data[col].clip(0, 50)
+                elif col in ['strikeout_momentum_last_3_games']:
+                    engineered_data[col] = engineered_data[col].clip(-10, 10)
         
-        print(f"\nSuccessfully calculated weighted stats for {len(all_weighted_stats)} pitchers")
-        return engineered_data
+        # Now merge the engineered features back with the original data
+        # Reset index to make Pitcher_Name a column
+        engineered_data = engineered_data.reset_index()
+        engineered_data = engineered_data.rename(columns={'index': 'Pitcher_Name'})
+        
+        # Merge with original data to preserve all original columns
+        final_data = pitchers_df.merge(
+            engineered_data,
+            on='Pitcher_Name',
+            how='left'
+        )
+        
+        # Fill NaN values in engineered features with 0
+        engineered_columns = [col for col in engineered_data.columns if col != 'Pitcher_Name']
+        for col in engineered_columns:
+            if col in final_data.columns:
+                final_data[col] = final_data[col].fillna(0)
+        
+        print(f"\nSuccessfully calculated performance stats for {len(all_performance_stats)} pitchers")
+        print(f"Final data shape: {final_data.shape}")
+        return final_data
         
     except Exception as e:
         print(f"Error occurred during analysis: {e}")
         import traceback
-        traceback.print_exc()  # Print the full stack trace for debugging
+        traceback.print_exc()
+        return None
+
+def engineer_features(csv_path='pitchers_data_with_opp_so.csv', output_path='pitchers_data_engineered.csv'):
+    """
+    Load data from CSV files and create engineered features.
+    
+    Args:
+        csv_path (str): Path to the pitchers data CSV file
+        output_path (str): Path to save the engineered features CSV file
+        
+    Returns:
+        DataFrame: Engineered features dataframe with original data preserved
+    """
+    try:
+        # Load the pitchers data
+        pitchers_df = pd.read_csv(csv_path)
+        
+        # Create engineered features using the main function (no k_percentage_df needed)
+        engineered_data = main(pitchers_df)
+        
+        # Save the engineered features to CSV if output_path is provided
+        if output_path and engineered_data is not None:
+            engineered_data.to_csv(output_path, index=False)
+            print(f"Engineered features saved to {output_path}")
+        
+        return engineered_data
+        
+    except Exception as e:
+        print(f"Error in engineer_features: {e}")
+        import traceback
+        traceback.print_exc()
         return None
 
 if __name__ == "__main__":
-    # Load data first
-    from data_utils import load_data
-    pitchers_df, k_percentage_df, _ = load_data()
-    main(pitchers_df, k_percentage_df)
+    # Test the feature engineering
+    engineered_data = engineer_features()
+    if engineered_data is not None:
+        print(f"Feature engineering completed. Shape: {engineered_data.shape}")
+        print(f"Original columns preserved: {[col for col in engineered_data.columns if not col.startswith(('avg_', 'strikeouts_', 'walks_', 'k_minus_', 'opponent_', 'swinging_', 'total_', 'games_', 'momentum_'))]}")
+        print(f"New engineered features: {[col for col in engineered_data.columns if col.startswith(('avg_', 'strikeouts_', 'walks_', 'k_minus_', 'opponent_', 'swinging_', 'total_', 'games_', 'momentum_'))]}")
