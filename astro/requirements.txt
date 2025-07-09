@@ -1,1 +1,22 @@
 # Astro Runtime includes the following pre-installed providers packages: https://www.astronomer.io/docs/astro/runtime-image-architecture#provider-packages
+
+# Web scraping and browser automation
+selenium>=4.34.0
+webdriver-manager>=4.0.2
+
+# HTTP requests
+requests>=2.32.3
+
+# Data manipulation and analysis
+pandas>=2.3.0
+numpy>=2.2.4
+
+# Environment variables
+python-dotenv>=1.1.0
+
+# Date and time handling
+python-dateutil>=2.9.0
+
+# Airflow dependencies (already included in Astro Runtime)
+# pendulum
+# airflow
