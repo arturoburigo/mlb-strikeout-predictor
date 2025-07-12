@@ -1,0 +1,5 @@
+2025-07-11 00:57:50,613 - INFO - Starting pitcher scraper
+2025-07-11 00:57:50,613 - INFO - Processing team: OAK from https://www.baseball-reference.com/teams/ATH/2025.shtml/
+2025-07-11 00:58:04,740 - ERROR - Error scraping https://www.baseball-reference.com/teams/ATH/2025.shtml/: 403 Client Error: Forbidden for url: https://www.baseball-reference.com/teams/ATH/2025.shtml/
+2025-07-11 00:58:04,740 - WARNING - No pitchers found for team OAK, skipping...
+2025-07-11 00:58:04,740 - INFO - Processing team: TOR from https://www.baseball-reference.com/teams/TOR/2025.shtml/

@@ -1,0 +1,3 @@
+from include.get_pitchers_records.fully_pitchers_record import run_pitcher_scraper
+
+run_pitcher_scraper()
